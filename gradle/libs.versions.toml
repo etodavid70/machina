@@ -54,6 +54,9 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-core-splashscreen= { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
 androidx-core-datastore={module ="androidx.datastore:datastore-preferences", version.ref="data-store"}
 
+#for material icon
+compose-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

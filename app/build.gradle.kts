@@ -67,6 +67,9 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.core.datastore)
+
+    //material icon
+    implementation(libs.compose.icons)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -76,6 +76,22 @@ class AuthViewModel (
             }
         }
     }
+
+
+    fun login(email: String, password: String) {
+
+        viewModelScope.launch {
+
+            _state.value = AuthUiState.Loading
+
+            try {
+                repository.setPassword(email, password)
+                _state.value = AuthUiState.Success(4)
+            } catch (e: Exception) {
+                _state.value = AuthUiState.Error("Password failed")
+            }
+        }
+    }
 }
 
 

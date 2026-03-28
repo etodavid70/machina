@@ -4,6 +4,7 @@ package com.example.machina.data.remote
 
 import com.example.machina.data.model.*
 import com.example.machina.data.model.onboarding_models.EmailRequest
+import com.example.machina.data.model.onboarding_models.LoginRequest
 import com.example.machina.data.model.onboarding_models.PasswordRequest
 import com.example.machina.data.model.onboarding_models.ProfileRequest
 import com.example.machina.data.model.onboarding_models.VerifyCodeRequest
@@ -31,5 +32,10 @@ interface AuthApi {
     @POST("auth/password")
     suspend fun setPassword(
         @Body request: PasswordRequest
+    ): Response<Unit>
+
+    @POST("auth/login")
+    suspend fun login(
+        @Body request: LoginRequest
     ): Response<Unit>
 }

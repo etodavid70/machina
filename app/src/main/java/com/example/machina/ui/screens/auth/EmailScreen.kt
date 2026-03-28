@@ -15,14 +15,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.machina.R
+import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
+import com.example.machina.ui.widgets.AppTextField
 import com.example.machina.view_model.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -40,7 +44,7 @@ fun EmailScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 10.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.Start,
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
 
@@ -55,29 +59,35 @@ fun EmailScreen(
         Image(
             painter = painterResource(id =R.drawable.email ),
             contentDescription = "Background Image",
-//
         )
 
         AppText("Verification code on your email",
             fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
         )
 
         Spacer(Modifier.height(16.dp))
         AppText("We  will send verification code on your email id",
             fontSize = 10.sp,
-            fontWeight = FontWeight.Light
+            fontWeight = FontWeight.Light,
+            textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(16.dp))
 
-        TextField(
+//        TextField(
+//            value = email,
+//            onValueChange = { email= it },
+//            label = { Text("What email id do you want to use?") },
+//            modifier = Modifier.fillMaxWidth()
+//        )
+        AppTextField(
             value = email,
-            onValueChange = { email= it },
-            label = { Text("What email id do you want to use?") },
-            modifier = Modifier.fillMaxWidth()
+            onValueChange = { email = it },
+            placeholder = "What email id do you want to use?",
+            borderColor = Color.LightGray,
+            focusedBorderColor = AppGreen
         )
-
-
 
         Spacer(modifier = Modifier.height(50.dp))
 
