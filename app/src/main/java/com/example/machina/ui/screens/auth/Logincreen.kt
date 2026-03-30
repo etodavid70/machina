@@ -109,7 +109,7 @@ fun LoginScreen(
             AppButton(
                 onClick = {
                     viewModel.login(email, password)
-                    navController.navigate("email")
+                    navController.navigate("dashboard")
 
                 },
                 text = "Login",

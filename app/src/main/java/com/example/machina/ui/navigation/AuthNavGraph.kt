@@ -10,6 +10,7 @@ import VerificationScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
 import com.example.machina.ui.screens.auth.LoginScreen
+import com.example.machina.ui.screens.dashboard.landing_page.LandingPage
 
 
 @Composable
@@ -31,5 +32,7 @@ fun AuthNavGraph() {
         composable("password") { PasswordScreen(navController) }
 
         composable("login") { LoginScreen(navController) }
+
+        composable("dashboard") { LandingPage() }
     }
 }
