@@ -1,7 +1,4 @@
-package com.example.machina.ui.screens.dashboard.home.active_machinery
-
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+package com.example.machina.ui.screens.dashboard.home.cloud_instances.dashboardcards
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,30 +12,18 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.machina.R
-import com.example.machina.data.model.dashboard_models.ActiveMachinery
+import com.example.machina.data.model.dashboard_models.CloudInstances
 import com.example.machina.ui.widgets.AppText
-import coil.compose.AsyncImage
 
 @Composable
-fun VmCard(vm: ActiveMachinery) {
+fun CloudCard(vm: CloudInstances) {
     Card(
         modifier = Modifier
             .width(250.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            AsyncImage(
-                model = vm.imageUrl,
-                contentDescription = vm.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                contentScale = ContentScale.Crop
-            )
             AppText(text = vm.name,
             )
             AppText(text = "Status: ${vm.status}")
@@ -49,16 +34,16 @@ fun VmCard(vm: ActiveMachinery) {
 
 
 @Composable
-fun VmHorizontalList(vmList: List<ActiveMachinery>) {
+fun CloudHorizontalList(vmList: List<CloudInstances>) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp), //
+            .height(150.dp), // 👈 VERY IMPORTANT
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         items(vmList) { vm ->
-            VmCard(vm)
+            CloudCard(vm)
         }
     }
 }

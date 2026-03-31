@@ -1,4 +1,4 @@
-package com.example.machina.view_model
+package com.example.machina.view_model.auth_viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,7 +7,6 @@ import com.example.machina.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
 
 class AuthViewModel (
     private val repository: AuthRepository
@@ -85,7 +84,7 @@ class AuthViewModel (
             _state.value = AuthUiState.Loading
 
             try {
-                repository.setPassword(email, password)
+                repository.login(email, password)
                 _state.value = AuthUiState.Success(4)
             } catch (e: Exception) {
                 _state.value = AuthUiState.Error("Password failed")
@@ -93,6 +92,3 @@ class AuthViewModel (
         }
     }
 }
-
-
-

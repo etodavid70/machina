@@ -16,6 +16,7 @@ koin = "3.5.3"
 composeCompiler = "1.5.15"
 core-splashscreen = "1.0.1"
 data-store = "1.1.1"
+coil = "2.5.0"
 
 
 [libraries]
@@ -56,6 +57,9 @@ androidx-core-datastore={module ="androidx.datastore:datastore-preferences", ver
 
 #for material icon
 compose-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
+#for async image
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -33,7 +33,7 @@ import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextFieldRounded
 import com.example.machina.ui.widgets.BackButton
 import com.example.machina.ui.widgets.AppPopupModal
-import com.example.machina.view_model.AuthViewModel
+import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

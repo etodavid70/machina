@@ -1,6 +1,4 @@
-package com.example.machina.view_model
-
-
+package com.example.machina.view_model.auth_viewmodel
 
 sealed class AuthUiState {
 
