@@ -1,86 +1,88 @@
 package com.example.machina.view_model.dashboard_viewmodel
 
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.machina.data.model.dashboard_models.ActiveMachinery
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.example.machina.data.model.dashboard_models.CloudInstances
 import com.example.machina.data.model.dashboard_models.VirtualMachineDetails
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+
 
 class HomeViewModel : ViewModel() {
 
-    private val _vmState = MutableStateFlow<VmUiState>(VmUiState.Loading)
-    val vmState: StateFlow<VmUiState> = _vmState
+    var vmList by mutableStateOf<List<ActiveMachinery>>(emptyList())
+        private set
 
-    private val _cloudInstanceUIState = MutableStateFlow<CloudInstanceUIState>(CloudInstanceUIState.Loading)
-    val cloudInstanceUIState: StateFlow<CloudInstanceUIState> = _cloudInstanceUIState
+    var cloudList by mutableStateOf<List<CloudInstances>>(emptyList())
+        private set
 
-    init {
-        fetchVMs()
-    }
-
-    private fun fetchVMs() {
-        viewModelScope.launch {
-            try {
-                // TODO: Replace with API call later
-//                val data = repository.getActiveMachinery()
-                val data = listOf(
-                    ActiveMachinery(
-                        id = 1,
-                        name = "Fedora",
-                        status = "Running",
-                        imageUrl = "https://share.google/4pNh1teeP2vzfKMQm",
-                        vmDetails = VirtualMachineDetails(
-                            cpu = "4 cores",
-                            ram = "8GB",
-                            storage = "100GB",
-                            os = "Ubuntu",
-                            ipAddress = "192.168.1.1",
-                            createdAt = "2026-03-30"
-                        )
-                    )
-
-
+    fun loadVMData() {
+        // simulate API response
+      val vmList = listOf(
+            ActiveMachinery(
+                id = 1,
+                name = "Ubuntu VM",
+                status = "Running",
+                imageUrl = "https://imageurl",
+                vmDetails = VirtualMachineDetails(
+                    cpu = "4 cores",
+                    ram = "8GB",
+                    storage = "100GB",
+                    os = "Ubuntu 22.04",
+                    ipAddress = "192.168.1.10",
+                    createdAt = "2026-04-07"
                 )
-
-                _vmState.value = VmUiState.Success(data)
-
-            } catch (e: Exception) {
-                _vmState.value = VmUiState.Error(e.message ?: "Something went wrong")
-            }
-        }
-    }
-
-
-
-    private fun fetchCloudInstances() {
-        viewModelScope.launch {
-            try {
-                // TODO: Replace with API call later
-//                val data = repository.getActiveMachinery()
-                val data = listOf(
-                    CloudInstances(
-                        id = 1,
-                        name = "VM 1",
-                        status = "Running",
-                        vmDetails = VirtualMachineDetails(
-                            cpu = "4 cores",
-                            ram = "8GB",
-                            storage = "100GB",
-                            os = "Ubuntu",
-                            ipAddress = "192.168.1.1",
-                            createdAt = "2026-03-30"
-                        )
-                    )
+            ),
+            ActiveMachinery(
+                id = 2,
+                name = "Windows VM",
+                status = "Stopped",
+                imageUrl = "https://imageurl2",
+                vmDetails = VirtualMachineDetails(
+                    cpu = "2 cores",
+                    ram = "4GB",
+                    storage = "50GB",
+                    os = "Windows 10",
+                    ipAddress = "192.168.1.11",
+                    createdAt = "2026-04-06"
                 )
+            )
+        )
 
-                _cloudInstanceUIState.value = CloudInstanceUIState.Success(data)
 
-            } catch (e: Exception) {
-                _cloudInstanceUIState.value = CloudInstanceUIState.Error(e.message ?: "Something went wrong")
-            }
-        }
+      val cloudList = listOf(
+            CloudInstances(
+                id = 1,
+                name = "Ubuntu VM",
+                status = "Running",
+                vmDetails = VirtualMachineDetails(
+                    cpu = "4 cores",
+                    ram = "8GB",
+                    storage = "100GB",
+                    os = "Ubuntu 22.04",
+                    ipAddress = "192.168.1.10",
+                    createdAt = "2026-04-07"
+                )
+            ),
+            CloudInstances(
+                id = 2,
+                name = "Windows VM",
+                status = "Stopped",
+                vmDetails = VirtualMachineDetails(
+                    cpu = "2 cores",
+                    ram = "4GB",
+                    storage = "50GB",
+                    os = "Windows 10",
+                    ipAddress = "192.168.1.11",
+                    createdAt = "2026-04-06"
+                )
+            )
+        )
+//
+//        Log.d("vmlist", vmList.toString())
+//        Log.d("cloudlist", cloudList.toString())
+
     }
 }

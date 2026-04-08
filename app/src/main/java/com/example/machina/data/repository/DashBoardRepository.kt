@@ -11,11 +11,11 @@ class DashBoardRepository(
 ) {
 
     suspend fun sendEmail(email: String) {
-        api.sendEmail(EmailRequest(email))
+//        api.sendEmail(EmailRequest(email))
     }
 
     suspend fun verifyCode(email: String, code: String) {
-        api.verifyCode(VerifyCodeRequest(email, code))
+//        api.verifyCode(VerifyCodeRequest(email, code))
     }
 
 }

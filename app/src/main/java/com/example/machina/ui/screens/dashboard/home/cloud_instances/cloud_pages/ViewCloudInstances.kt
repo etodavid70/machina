@@ -1,5 +1,4 @@
 package com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages
-
 import AppButton
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -35,15 +34,12 @@ import com.example.machina.ui.widgets.BackButton
 import com.example.machina.ui.widgets.AppPopupModal
 
 @Composable
-fun ConnectToACloudInstance(
+fun ViewCloudInstance(
     navController: NavController,
 ) {
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
 
-    var showDialog by remember { mutableStateOf(false) }
-    var biometricStatus by remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
@@ -66,80 +62,16 @@ fun ConnectToACloudInstance(
         Spacer(Modifier.height(16.dp))
 
 
-        Image(
-            painter = painterResource(id = R.drawable.connect_cloud_instance),
-            contentDescription = "Background Image",
-        )
-
-        Spacer(Modifier.height(16.dp))
-
         AppText(
-            "Connect to a cloud Instance",
+            "Cloud Instance(s)",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(16.dp))
-
-        AppTextFieldRounded(
-            value = email,
-            onValueChange = { email = it },
-            placeholder = "Public IP address",
-//            borderColor = AppGreen
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        AppPasswordField(
-            value = password,
-            onValueChange = { password = it },
-            placeholder = "Password",
-            borderColor = AppGreen
-        )
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        Row(
-
-        ) {
-
-            AppButton(
-                onClick = {
-
-                },
-                text = "Connect",
-                modifier = Modifier
-                    .width(250.dp)
-            )
-
-            Spacer(modifier = Modifier.width(50.dp))
-            Image(
-                painter = painterResource(id = R.drawable.biometrics),
-                contentDescription = "Background Image",
-                modifier = Modifier.clickable {
-                    showDialog=true
-
-                }
-            )
-
-        }
 
 
 
-
-        AppPopupModal(
-            showDialog = showDialog,
-            onDismiss = { showDialog = false },
-            imageRes = R.drawable.biometrics2,
-            title = "Fingerprint Authentication",
-            description = "Please use finger print to connect",
-            buttonText = "Close",
-            onButtonClick = {
-
-                showDialog = false
-                // handle action
-            }
-        )
 
     }
 }

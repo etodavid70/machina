@@ -10,28 +10,14 @@ import retrofit2.http.POST
 
 interface DashBoardApi {
 
-    @POST("auth/email")
-    suspend fun sendEmail(
+    @POST("dashboard/home/get-instances")
+    suspend fun getCloudInstance(
         @Body request: EmailRequest
     ): Response<Unit>
 
-    @POST("auth/verify")
-    suspend fun verifyCode(
+    @POST("dashboard/home/active-machinery")
+    suspend fun activeMachinery(
         @Body request: VerifyCodeRequest
     ): Response<Unit>
 
-    @POST("auth/profile")
-    suspend fun submitProfile(
-        @Body request: ProfileRequest
-    ): Response<Unit>
-
-    @POST("auth/password")
-    suspend fun setPassword(
-        @Body request: PasswordRequest
-    ): Response<Unit>
-
-    @POST("auth/login")
-    suspend fun login(
-        @Body request: LoginRequest
-    ): Response<Unit>
 }

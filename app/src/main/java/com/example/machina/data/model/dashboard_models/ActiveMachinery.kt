@@ -6,7 +6,6 @@ data class ActiveMachinery (
     val status: String,
     val imageUrl: String,
     val vmDetails: VirtualMachineDetails
-
 )
 
 
