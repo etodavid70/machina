@@ -1,3 +1,4 @@
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,6 +41,39 @@ fun AppButton(
         )
     }
 }
+
+
+@Composable
+fun AppWhiteButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    isEnabled: Boolean = true,
+    selectedColor: Color = Color.Transparent ,
+    unselectedColor: Color = Color.LightGray,
+    textColor: Color = AppGreen
+) {
+
+    Button(
+        onClick = onClick,
+        enabled = isEnabled,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(45.dp)
+            .border(1.dp, AppGreen, shape = RoundedCornerShape(8.dp))
+        ,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isEnabled) selectedColor else unselectedColor
+        ),
+//        shape = RoundedCornerShape(4.dp)
+    ) {
+        Text(
+            text = text,
+            color = textColor
+        )
+    }
+}
+
 
 
 //AppButton(

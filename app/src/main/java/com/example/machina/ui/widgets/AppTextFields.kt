@@ -87,7 +87,7 @@ fun AppTextFieldRounded(
 
     OutlinedTextField(
         value = value,
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(16.dp),
         onValueChange = onValueChange,
         placeholder = {
             Text(text = placeholder)

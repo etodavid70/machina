@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.machina.data.model.dashboard_models.CloudInstances
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ConnectToACloudInstance
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ViewCloudInstance
 import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
@@ -28,6 +29,9 @@ sealed class Screen(val route: String) {
 @Composable
 fun NavigationGraph(navController: NavHostController) {
 
+    val viewModel: HomeViewModel = viewModel()
+
+
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route
@@ -35,7 +39,6 @@ fun NavigationGraph(navController: NavHostController) {
 
         //bottom nav screens
         composable(Screen.Home.route) {
-            val viewModel: HomeViewModel = viewModel()
             HomeScreen(
                 navController = navController,
                 viewModel = viewModel
@@ -46,7 +49,12 @@ fun NavigationGraph(navController: NavHostController) {
 
         //other screens
         composable(Screen.ConnectCloud.route) { ConnectToACloudInstance(navController) }
-        composable(Screen.ViewCloud.route) { ViewCloudInstance(navController) }
+        composable(Screen.ViewCloud.route) {
+            val viewModel: HomeViewModel = viewModel()
+            ViewCloudInstance(
+                navController,
+                viewModel.cloudList
+            ) }
     }
 }
 

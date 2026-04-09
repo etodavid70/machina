@@ -25,15 +25,15 @@ fun HomeScreen(
 ) {
     //load dummy or api data
     LaunchedEffect(Unit) {
-        viewModel.loadVMData()
+        viewModel.refresh()
     }
 
 
     val vmList = viewModel.vmList
     val cloudList = viewModel.cloudList
 
-    Log.d("vmlist", vmList.toString())
-    Log.d("cloudlist", cloudList.toString())
+//    Log.d("vmlist", vmList.toString())
+//    Log.d("cloudlist", cloudList.toString())
 
     Column(
         modifier = Modifier
