@@ -1,6 +1,4 @@
 package com.example.machina.view_model.dashboard_viewmodel
-
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.machina.data.model.dashboard_models.ActiveMachinery
@@ -124,8 +122,5 @@ class HomeViewModel : ViewModel() {
               )
           )
         )
-//
-//
-
     }
 }

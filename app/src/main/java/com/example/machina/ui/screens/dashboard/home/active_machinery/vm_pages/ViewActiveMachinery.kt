@@ -1,4 +1,5 @@
-package com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages
+package com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages
+
 import AppButton
 import AppWhiteButton
 import androidx.compose.foundation.layout.Arrangement
@@ -33,12 +34,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
 import coil.compose.AsyncImage
 import com.example.machina.R
+import com.example.machina.data.model.dashboard_models.ActiveMachinery
 import com.example.machina.ui.widgets.AppPopupModal
 
 @Composable
-fun ViewCloudInstance(
+fun ViewActiveMachinery(
     navController: NavController,
-    cloudList: List<CloudInstances>,
+    vmList: List<ActiveMachinery>,
 ) {
 
     var showDialog by remember { mutableStateOf(false) }
@@ -66,15 +68,13 @@ fun ViewCloudInstance(
             )
         }
 
-
-
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            items(cloudList) { instance ->
-                CloudInstanceItem(
+            items(vmList) { instance ->
+                VirtualMachineItem(
                     instance,
                     "Connect"
                 ) {
@@ -84,12 +84,12 @@ fun ViewCloudInstance(
             }
 
             item {
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                AppButton(
-                    text = "Connect to a Remote Instance",
+                AppWhiteButton(
+                    text = "Create Virtual Machine",
                     onClick = {
-                        navController.navigate("connect_cloud")
+                        navController.navigate("create_vm")
                     }
                 )
 
@@ -119,8 +119,8 @@ fun ViewCloudInstance(
 
 
 @Composable
-fun CloudInstanceItem(
-    instance: CloudInstances,
+fun VirtualMachineItem(
+    instance: ActiveMachinery,
     buttonText: String,
     onButtonClick: () -> Unit,
 ) {
@@ -145,7 +145,7 @@ fun CloudInstanceItem(
         {
 //
             AppText(text = instance.name, fontWeight = FontWeight.Bold, fontSize = 25.sp)
-            AppText(text = "Provider : ${instance.serviceProvider}", fontWeight = FontWeight.Medium)
+            AppText(text = "ID: ${instance.id}", fontWeight = FontWeight.Medium)
             Spacer(modifier = Modifier.height(8.dp))
 
             AppText(
@@ -153,8 +153,8 @@ fun CloudInstanceItem(
                 fontWeight = FontWeight.Light
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-            AppWhiteButton(
+            Spacer(modifier = Modifier.height(20.dp))
+            AppButton(
 
                 text = buttonText,
                 onClick = onButtonClick

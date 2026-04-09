@@ -1,5 +1,4 @@
-package com.example.machina.ui.screens.dashboard.home.active_machinery
-import android.util.Log
+package com.example.machina.ui.screens.dashboard.home.active_machinery.vm_cards
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

@@ -7,6 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.machina.data.model.dashboard_models.CloudInstances
+import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.CreateVirtualMachine
+import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.ViewActiveMachinery
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ConnectToACloudInstance
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ViewCloudInstance
 import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
@@ -22,6 +24,9 @@ sealed class Screen(val route: String) {
 
     object ConnectCloud : Screen("connect_cloud")
     object ViewCloud : Screen("view_cloud_instances")
+
+    object CreateVM : Screen("create_vm")
+    object ViewVM: Screen("view_vm")
 
 }
 
@@ -50,11 +55,18 @@ fun NavigationGraph(navController: NavHostController) {
         //other screens
         composable(Screen.ConnectCloud.route) { ConnectToACloudInstance(navController) }
         composable(Screen.ViewCloud.route) {
-            val viewModel: HomeViewModel = viewModel()
+
             ViewCloudInstance(
                 navController,
                 viewModel.cloudList
             ) }
+
+        composable(Screen.CreateVM.route) { CreateVirtualMachine() }
+
+        composable(Screen.ViewVM.route) { ViewActiveMachinery(
+            navController,
+            viewModel.vmList
+        ) }
     }
 }
 

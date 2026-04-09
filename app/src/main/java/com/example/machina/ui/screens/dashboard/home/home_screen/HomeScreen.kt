@@ -1,6 +1,5 @@
 package com.example.machina.ui.screens.dashboard.home.home_screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,10 +8,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.machina.ui.screens.dashboard.home.active_machinery.ActiveMachineryCard
-import com.example.machina.ui.screens.dashboard.home.cloud_instances.dashboardcards.CloudInstancesCard
+import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_cards.ActiveMachineryCard
+import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_cards.CloudInstancesCard
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
 
@@ -50,7 +48,12 @@ fun HomeScreen(
         ActiveMachineryCard(
             vmList = vmList,
             onCreateClick = {
-                // handle create click
+                if (vmList.isEmpty()) {
+                    navController.navigate("create_vm")
+                }
+                else{
+                    navController.navigate("view_vm")
+                }
             }
         )
 

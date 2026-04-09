@@ -1,17 +1,14 @@
-package com.example.machina.ui.screens.dashboard.home.cloud_instances.dashboardcards
+package com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_cards
 
-import android.util.Log
 import com.example.machina.ui.screens.dashboard.home.widgets.NoDataCard
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.machina.R
-import com.example.machina.data.model.dashboard_models.ActiveMachinery
 import com.example.machina.data.model.dashboard_models.CloudInstances
 import com.example.machina.ui.screens.dashboard.home.widgets.VmDataCard
 import com.example.machina.ui.theme.AppOrange
-import com.example.machina.ui.theme.AppPurple
 
 
 @Composable
