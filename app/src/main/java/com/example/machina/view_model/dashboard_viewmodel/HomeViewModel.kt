@@ -21,7 +21,6 @@ class HomeViewModel : ViewModel() {
         loadVMData() // automatically loads data
     }
 
-
     fun refresh() {
         loadVMData()
     }

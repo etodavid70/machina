@@ -75,7 +75,7 @@ fun AppPopupModal(
                     AppButton(
                         onClick = {
                             onButtonClick()
-                            onDismiss()
+//                            onDismiss()
                         },
                       text = buttonText
                     )

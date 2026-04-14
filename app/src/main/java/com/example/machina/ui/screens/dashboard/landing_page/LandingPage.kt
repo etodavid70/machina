@@ -33,8 +33,6 @@ fun LandingPage() {
             bottomBar = {
                 BottomNavigationBar(navController)
             },
-
-
         ) { padding ->
 
             Column(

@@ -1,5 +1,4 @@
-package com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages
-
+package com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.view_vm
 import AppButton
 import AppWhiteButton
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.machina.data.model.dashboard_models.CloudInstances
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.BackButton
 import androidx.compose.foundation.lazy.items
@@ -78,14 +76,11 @@ fun ViewActiveMachinery(
                     instance,
                     "Connect"
                 ) {
-
                     showDialog=true
                 }
             }
-
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-
                 AppWhiteButton(
                     text = "Create Virtual Machine",
                     onClick = {
@@ -97,10 +92,6 @@ fun ViewActiveMachinery(
             }
         }
 
-
-
-
-
         AppPopupModal(
             showDialog = showDialog,
             onDismiss = { showDialog = false },
@@ -109,7 +100,6 @@ fun ViewActiveMachinery(
             description = "Please use finger print to Login",
             buttonText = "Close",
             onButtonClick = {
-
                 showDialog = false
                 // handle action
             }
@@ -160,9 +150,8 @@ fun VirtualMachineItem(
                 onClick = onButtonClick
             )
 
+
         }
-
-
     }
 
 

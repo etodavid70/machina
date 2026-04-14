@@ -17,7 +17,6 @@ import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
 
 @Composable
 fun HomeScreen(
-
     viewModel: HomeViewModel,
     navController: NavController
 ) {
