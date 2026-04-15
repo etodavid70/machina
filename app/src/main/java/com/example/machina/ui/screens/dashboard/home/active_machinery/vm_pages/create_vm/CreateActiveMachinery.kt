@@ -46,7 +46,7 @@ fun CreateVirtualMachine(
 
 
     Column() {
-        AppText(text = "Create a Virtual Machine", fontWeight = FontWeight.Bold, fontSize = 25.sp)
+//        AppText(text = "Create a Virtual Machine", fontWeight = FontWeight.Bold, fontSize = 25.sp)
 
         //ensure this is shown after successful is true
 

@@ -41,7 +41,7 @@ fun ViewOsTypes(
 
 
     Column() {
-        AppText(text = "Create a Virtual Machine", fontWeight = FontWeight.Bold, fontSize = 25.sp)
+        AppText(text = "Create a Virtual Machine", fontWeight = FontWeight.Normal, fontSize = 18.sp)
 
         //ensure this is shown after successful is true
 
@@ -57,6 +57,8 @@ fun ViewOsTypes(
 
 
                 ) {
+
+                    navController.navigate("device_options")
                     //onbotton click
                 }
             }
