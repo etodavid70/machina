@@ -16,3 +16,7 @@ val AppGreenLight=  Color(0xFF11772D)
 val AppPurple = Color(0xFFD9D6F3)
 
 val AppOrange= Color(0xFFF9EEC6)
+
+val AppOrangeLight= Color(0xFFFFCC4D)
+
+val AppGrey= Color(0xFFF6F6F5)

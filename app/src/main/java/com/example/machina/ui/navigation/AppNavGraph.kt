@@ -5,8 +5,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.machina.ui.navigation.Screen.DeviceOps
+
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.CreateVirtualMachine
+import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.DeviceOptions
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.FailedDetails
+import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.SelectCPUCores
+import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.SelectRam
+import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.SelectStorage
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.ViewOsTypes
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.view_vm.ViewActiveMachinery
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ConnectToACloudInstance
@@ -30,6 +36,10 @@ sealed class Screen(val route: String) {
     object ViewVM : Screen("view_vm")
     object Failed : Screen("failed_details")
     object ViewOsType : Screen("view_os_type")
+    object DeviceOps: Screen("device_options")
+    object Ram: Screen("ram")
+    object Cpu: Screen("cpu")
+    object Storage: Screen("storage")
 
 }
 
@@ -68,8 +78,6 @@ fun NavigationGraph(navController: NavHostController) {
             )
         }
 
-
-
         composable(Screen.ViewVM.route) {
             ViewActiveMachinery(
                 navController,
@@ -94,6 +102,12 @@ fun NavigationGraph(navController: NavHostController) {
                 createVmViewModel.vmList
             )
         }
+
+        composable(DeviceOps.route){ DeviceOptions(navController) }
+
+        composable(Screen.Ram.route){ SelectRam() }
+        composable(Screen.Cpu.route){ SelectCPUCores() }
+        composable(Screen.Storage.route){ SelectStorage() }
     }
 }
 
