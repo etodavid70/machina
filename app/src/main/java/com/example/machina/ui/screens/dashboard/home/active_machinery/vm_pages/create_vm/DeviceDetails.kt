@@ -1,6 +1,7 @@
 package com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm
 
 import AppButton
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.machina.R
@@ -27,10 +29,24 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.theme.AppGrey
 import com.example.machina.ui.widgets.AppText
 import androidx.navigation.NavController
+import com.example.machina.services.AppServices
+import com.example.machina.utils.NotificationHelper
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Log
+import androidx.core.content.ContextCompat
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
+import rememberNotificationHandler
+
 
 @Composable
 fun DeviceOptions(navController: NavController) {
+    val context = LocalContext.current
 
+    val sendNotification = rememberNotificationHandler()
 
     Column(
         modifier = Modifier
@@ -106,10 +122,17 @@ fun DeviceOptions(navController: NavController) {
             }
         }
 
-        AppButton("PROCEED", {
-
+        AppButton("PROCEED",
+            {
+                sendNotification(
+            "Downloading",
+            "Artifacts are being downloaded..."
+        )
+                navController.navigate("download_artifact")
 
         })
     }
+
 }
+
 

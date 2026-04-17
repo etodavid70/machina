@@ -9,6 +9,7 @@ import com.example.machina.ui.navigation.Screen.DeviceOps
 
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.CreateVirtualMachine
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.DeviceOptions
+import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.DownloadArtifacts
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.FailedDetails
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.SelectCPUCores
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.SelectRam
@@ -40,7 +41,7 @@ sealed class Screen(val route: String) {
     object Ram: Screen("ram")
     object Cpu: Screen("cpu")
     object Storage: Screen("storage")
-
+    object Downloading: Screen("download_artifact")
 }
 
 // set up a navigation graph using the screen class and the pages already created
@@ -108,6 +109,7 @@ fun NavigationGraph(navController: NavHostController) {
         composable(Screen.Ram.route){ SelectRam() }
         composable(Screen.Cpu.route){ SelectCPUCores() }
         composable(Screen.Storage.route){ SelectStorage() }
+        composable(Screen.Downloading.route){ DownloadArtifacts() }
     }
 }
 

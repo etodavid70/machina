@@ -16,7 +16,7 @@ import com.example.machina.ui.theme.AppGreen
 @Composable
 fun AppButton(
     text: String,
-    onClick: () -> Unit,
+    onClick: ()-> Unit,
     modifier: Modifier = Modifier.fillMaxWidth(),
     isEnabled: Boolean = true,
     selectedColor: Color = AppGreen,
@@ -41,6 +41,8 @@ fun AppButton(
         )
     }
 }
+
+
 
 
 @Composable
