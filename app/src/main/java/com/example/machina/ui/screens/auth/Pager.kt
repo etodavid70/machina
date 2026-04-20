@@ -1,4 +1,5 @@
 package com.example.machina.ui.screens.auth
+import RequestNotificationPermission
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.*
@@ -6,11 +7,14 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.machina.data.model.onboarding_models.PagerModel
 import com.example.machina.utils.saveOnboardingSeen
 import kotlinx.coroutines.launch
+import com.example.machina.utils.NotificationHelper
 
 @Composable
 fun Pager(
     onFinish: () -> Unit // Callback to navigate to main screen
 ) {
+
+    RequestNotificationPermission()
     val context = LocalContext.current
     val pagerState = rememberPagerState(pageCount = { 3 })
     val coroutineScope = rememberCoroutineScope()

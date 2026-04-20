@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,47 +18,30 @@ fun rememberNotificationHandler(): (String, String) -> Unit {
 
     val context = LocalContext.current
 
-    var pendingTitle by remember { mutableStateOf<String?>(null) }
-    var pendingMessage by remember { mutableStateOf<String?>(null) }
+    return { title: String, message: String ->
+        NotificationHelper.showNotification(context, title, message)
+    }
+}
+
+
+@Composable
+fun RequestNotificationPermission() {
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
+    ) { }
 
-        if (isGranted) {
-            NotificationHelper.showNotification(
-                context,
-                pendingTitle ?: "",
-                pendingMessage ?: ""
-            )
-        }
-    }
-
-
-
-
-    return { title: String, message: String ->
-
+    LaunchedEffect(Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val isGranted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
 
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-
-                NotificationHelper.showNotification(context, title, message)
-
-            } else {
-                // Save values before requesting permission
-                pendingTitle = title
-                pendingMessage = message
-
+            if (!isGranted) {
                 launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
-
-        } else {
-            NotificationHelper.showNotification(context, title, message)
         }
     }
 }
