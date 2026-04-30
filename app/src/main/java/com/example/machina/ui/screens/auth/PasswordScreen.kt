@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +24,10 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.AppPasswordField
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
+import com.example.machina.view_model.auth_viewmodel.AuthStep
+import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -36,6 +40,15 @@ fun PasswordScreen(
 
     var password by remember { mutableStateOf("") }
     var password2 by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        viewModel.state.collectLatest { state ->
+            if (state is AuthUiState.Success && state.step == AuthStep.PasswordSet) {
+                viewModel.resetState()
+                navController.navigate("login")
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -85,7 +98,6 @@ fun PasswordScreen(
         AppButton(
             onClick = {
                 viewModel.setPassword(password, password2)
-                navController.navigate("login")
 
             },
             text = "Submit"

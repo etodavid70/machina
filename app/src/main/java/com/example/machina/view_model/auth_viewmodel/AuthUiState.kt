@@ -7,10 +7,18 @@ sealed class AuthUiState {
     object Loading : AuthUiState()
 
     data class Success(
-        val step: Int
+        val step: AuthStep
     ) : AuthUiState()
 
     data class Error(
         val message: String
     ) : AuthUiState()
+}
+
+enum class AuthStep {
+    EmailSent,
+    EmailVerified,
+    ProfileSubmitted,
+    PasswordSet,
+    LoggedIn
 }

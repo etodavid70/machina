@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +29,10 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
+import com.example.machina.view_model.auth_viewmodel.AuthStep
+import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -43,6 +47,15 @@ fun ProfileScreen(
     var lastName by remember { mutableStateOf("") }
     var dateOfBirth by remember { mutableStateOf("") }
     var gender by remember { mutableStateOf("Male") }
+
+    LaunchedEffect(Unit) {
+        viewModel.state.collectLatest { state ->
+            if (state is AuthUiState.Success && state.step == AuthStep.ProfileSubmitted) {
+                viewModel.resetState()
+                navController.navigate("password")
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -65,11 +78,7 @@ fun ProfileScreen(
             contentDescription = "Background Image",
         )
 
-        AppText("Verification code on your email",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+
 
         Spacer(Modifier.height(16.dp))
         AppText("Personal Details",
@@ -91,13 +100,13 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         AppTextField(
-            value = firstName,
-            onValueChange = { firstName = it },
+            value = lastName,
+            onValueChange = { lastName = it },
             placeholder = "Last Name",
             borderColor = Color.LightGray,
             focusedBorderColor = AppGreen
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(100.dp))
 
         AppButton(
             onClick = {
@@ -109,7 +118,6 @@ fun ProfileScreen(
                 )
 
                 viewModel.submitProfile(profile)
-                navController.navigate("password")
 
             },
             text = "Send Verification Code"

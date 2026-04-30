@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,9 +31,13 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
+import com.example.machina.utils.getEmail
+import com.example.machina.utils.saveEmail
+import com.example.machina.view_model.auth_viewmodel.AuthStep
 import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
+import android.util.Log
 
 @Composable
 fun EmailScreen(
@@ -42,13 +47,16 @@ fun EmailScreen(
     viewModel: AuthViewModel = koinViewModel()
 ) {
 
+    val context = LocalContext.current
+
     var email by remember { mutableStateOf("") }
 
-    val state = viewModel.state.collectAsState()
+
 
     LaunchedEffect(Unit) {
         viewModel.state.collectLatest { state ->
-            if (state is AuthUiState.Success) {
+            if (state is AuthUiState.Success && state.step == AuthStep.EmailSent) {
+                viewModel.resetState()
                 navController.navigate("verify")
             }
         }
@@ -108,7 +116,11 @@ fun EmailScreen(
 
         AppButton(
             onClick = {
+
+//
                 viewModel.sendEmail(email)
+                Log.d("email saved", getEmail(context).toString())
+                saveEmail(context, email)
 
 
                       },

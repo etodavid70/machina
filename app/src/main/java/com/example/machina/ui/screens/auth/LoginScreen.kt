@@ -36,6 +36,7 @@ import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextFieldRounded
 import com.example.machina.ui.widgets.BackButton
 import com.example.machina.ui.widgets.AppPopupModal
+import com.example.machina.view_model.auth_viewmodel.AuthStep
 import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -54,7 +55,9 @@ fun LoginScreen(
 
     val state = viewModel.state.collectAsState()
     LaunchedEffect(state.value) {
-        if (state.value is AuthUiState.Success) {
+        val currentState = state.value
+        if (currentState is AuthUiState.Success && currentState.step == AuthStep.LoggedIn) {
+            viewModel.resetState()
             navController.navigate("dashboard") {
                 popUpTo("login") { inclusive = true } // optional (removes login from backstack)
             }

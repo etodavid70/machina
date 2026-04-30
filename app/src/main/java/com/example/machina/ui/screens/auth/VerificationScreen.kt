@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,7 +29,11 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
+import com.example.machina.utils.getEmail
+import com.example.machina.view_model.auth_viewmodel.AuthStep
+import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -38,7 +44,19 @@ fun VerificationScreen(
     viewModel: AuthViewModel = koinViewModel()
 ) {
 
+    val context = LocalContext.current
+    val savedEmail = remember { getEmail(context) }
+
     var code by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        viewModel.state.collectLatest { state ->
+            if (state is AuthUiState.Success && state.step == AuthStep.EmailVerified) {
+                viewModel.resetState()
+                navController.navigate("profile")
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -84,17 +102,14 @@ fun VerificationScreen(
             borderColor = Color.LightGray,
             focusedBorderColor = AppGreen
         )
-
-
-
         Spacer(modifier = Modifier.height(50.dp))
 
         AppButton(
             onClick = {
-                viewModel.verifyCode(code)
-                navController.navigate("profile")
+                viewModel.verifyCode(savedEmail.toString(), code)
+//                navController.navigate("profile")
                       },
-            text = "Validate Code"
+            text = "Verify Code"
         )
     }
 }
