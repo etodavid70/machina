@@ -22,6 +22,7 @@ import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
 import com.example.machina.ui.screens.dashboard.profile.ProfileScreen
 import com.example.machina.ui.screens.dashboard.settings.SettingsScreen
 import com.example.machina.view_model.dashboard_viewmodel.CreateVmViewModel
+import com.example.machina.view_model.dashboard_viewmodel.DeviceInfoViewModel
 import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
 
 //define your screens class
@@ -51,6 +52,8 @@ fun NavigationGraph(navController: NavHostController) {
     val viewModel: HomeViewModel = viewModel()
 
     val createVmViewModel: CreateVmViewModel = viewModel()
+
+    val deviceInfoViewModel: DeviceInfoViewModel= viewModel()
 
 
 
@@ -90,12 +93,14 @@ fun NavigationGraph(navController: NavHostController) {
         composable(Screen.CreateVM.route) {
             CreateVirtualMachine(
                 navController,
-                createVmViewModel.mainOsVmList
-
+                createVmViewModel.mainOsVmList,
+                viewModel= deviceInfoViewModel
             )
         }
 
-        composable(Screen.Failed.route) { FailedDetails() }
+        composable(Screen.Failed.route) { FailedDetails(
+            viewModel =deviceInfoViewModel
+        ) }
 
         composable(Screen.ViewOsType.route) {
             ViewOsTypes(

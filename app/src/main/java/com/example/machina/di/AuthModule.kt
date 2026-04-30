@@ -1,4 +1,4 @@
-package com.example.auth.di
+package com.example.machina.di
 
 
 import com.example.machina.data.remote.AuthApi
@@ -9,27 +9,16 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-val appModule = module {
+val authModule = module {
 
-    // Retrofit
-    single {
-        Retrofit.Builder()
-            .baseUrl("https://yourapi.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
 
-    // API
     single<AuthApi> {
         get<Retrofit>().create(AuthApi::class.java)
     }
-
-    // Repository
     single {
         AuthRepository(get())
     }
 
-    // ViewModel
     viewModel {
         AuthViewModel(get())
     }

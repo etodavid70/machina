@@ -1,6 +1,7 @@
 package com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm
 
 import AppButton
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,12 +14,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,12 +36,16 @@ import com.example.machina.data.model.dashboard_models.ActiveMachinery
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.view_vm.VirtualMachineItem
 import com.example.machina.ui.widgets.AppPopupModal
 import com.example.machina.ui.widgets.AppText
+import com.example.machina.view_model.dashboard_viewmodel.DeviceInfoViewModel
 
 @Composable
 fun CreateVirtualMachine(
     navController: NavController,
     vmList: List<MainOs>,
+    viewModel: DeviceInfoViewModel
 ) {
+ val context = LocalContext.current
+
 
 
     var showDialog by remember { mutableStateOf(true) }
@@ -45,11 +53,14 @@ fun CreateVirtualMachine(
     var failedDialog by remember { mutableStateOf(false) }
 
 
+    LaunchedEffect(Unit) {
+        viewModel.loadDeviceInfo(context)
+    }
+
+
+
     Column() {
-//        AppText(text = "Create a Virtual Machine", fontWeight = FontWeight.Bold, fontSize = 25.sp)
-
         //ensure this is shown after successful is true
-
 
         if (showDialog==false){
             AppText(text = "Select an Operating system", fontWeight = FontWeight.Normal, fontSize = 18.sp)
@@ -62,7 +73,6 @@ fun CreateVirtualMachine(
                     VirtualMachineItem(
                         instance,
                         "View Options"
-
                     ) {
                         navController.navigate("view_os_type")
                     }

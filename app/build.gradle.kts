@@ -68,6 +68,10 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.core.datastore)
 
+    //for statemanagement
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.compose.livedata)
+
     //material icon
     implementation(libs.compose.icons)
 

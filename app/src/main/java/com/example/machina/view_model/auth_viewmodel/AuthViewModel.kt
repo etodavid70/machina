@@ -1,5 +1,6 @@
 package com.example.machina.view_model.auth_viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.machina.data.model.onboarding_models.ProfileRequest
@@ -26,8 +27,10 @@ class AuthViewModel (
             try {
                 repository.sendEmail(email)
                 _state.value = AuthUiState.Success(1)
+                Log.d("email", "successful")
             } catch (e: Exception) {
                 _state.value = AuthUiState.Error("Failed")
+                Log.d("email", e.toString())
             }
         }
     }
@@ -82,12 +85,14 @@ class AuthViewModel (
         viewModelScope.launch {
 
             _state.value = AuthUiState.Loading
-
+            Log.d("login", "logging in")
             try {
                 repository.login(email, password)
                 _state.value = AuthUiState.Success(4)
+                Log.d("login now", "success")
             } catch (e: Exception) {
                 _state.value = AuthUiState.Error("Password failed")
+                Log.d("login failed", e.toString())
             }
         }
     }

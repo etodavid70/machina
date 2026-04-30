@@ -28,7 +28,7 @@ class AuthRepository (
         api.setPassword(PasswordRequest(password, confirm))
     }
 
-    suspend fun login(password: String, email: String) {
+    suspend fun login(email: String, password: String) {
         api.login(LoginRequest(email, password))
     }
 }

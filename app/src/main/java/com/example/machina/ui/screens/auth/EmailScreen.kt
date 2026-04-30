@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +30,7 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
+import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,6 +43,17 @@ fun EmailScreen(
 ) {
 
     var email by remember { mutableStateOf("") }
+
+    val state = viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.state.collectLatest { state ->
+            if (state is AuthUiState.Success) {
+                navController.navigate("verify")
+            }
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -94,7 +109,7 @@ fun EmailScreen(
         AppButton(
             onClick = {
                 viewModel.sendEmail(email)
-                navController.navigate("verify")
+
 
                       },
             text = "Send Verification Code"

@@ -24,6 +24,10 @@ class HomeViewModel : ViewModel() {
     fun refresh() {
         loadVMData()
     }
+
+
+
+
     fun loadVMData() {
         // simulate API response
      vmList = listOf(

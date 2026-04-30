@@ -1,7 +1,9 @@
 package com.example.machina
 
 import android.app.Application
-import com.example.auth.di.appModule
+import com.example.machina.di.authModule
+import com.example.machina.di.dashboardModule
+import com.example.machina.di.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -12,7 +14,13 @@ class MyApplication : Application() {
 
         startKoin {
             androidContext(this@MyApplication)
-            modules(appModule)
+            modules(
+                listOf(
+                    networkModule,
+                    authModule,
+                    dashboardModule
+                )
+            )
         }
     }
 }

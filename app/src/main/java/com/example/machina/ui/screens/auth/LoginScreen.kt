@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +36,7 @@ import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextFieldRounded
 import com.example.machina.ui.widgets.BackButton
 import com.example.machina.ui.widgets.AppPopupModal
+import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -48,6 +51,15 @@ fun LoginScreen(
 
     var showDialog by remember { mutableStateOf(false) }
     var biometricStatus by remember { mutableStateOf(false) }
+
+    val state = viewModel.state.collectAsState()
+    LaunchedEffect(state.value) {
+        if (state.value is AuthUiState.Success) {
+            navController.navigate("dashboard") {
+                popUpTo("login") { inclusive = true } // optional (removes login from backstack)
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -110,7 +122,7 @@ fun LoginScreen(
             AppButton(
                 onClick = {
                     viewModel.login(email, password)
-                    navController.navigate("dashboard")
+//                    navController.navigate("dashboard")
 
                 },
                 text = "Login",

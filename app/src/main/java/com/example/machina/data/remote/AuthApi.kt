@@ -14,12 +14,12 @@ import retrofit2.http.POST
 
 interface AuthApi {
 
-    @POST("auth/email")
+    @POST("auth/start-email-verification/")
     suspend fun sendEmail(
         @Body request: EmailRequest
     ): Response<Unit>
 
-    @POST("auth/verify")
+    @POST("auth/verify-email/")
     suspend fun verifyCode(
         @Body request: VerifyCodeRequest
     ): Response<Unit>
