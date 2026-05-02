@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -20,10 +22,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.machina.R
+import com.example.machina.data.model.onboarding_models.PasswordRequest
+import com.example.machina.data.model.onboarding_models.ProfileRequest
 import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.AppPasswordField
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
+import com.example.machina.utils.getUserId
 import com.example.machina.view_model.auth_viewmodel.AuthStep
 import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
@@ -38,6 +43,9 @@ fun PasswordScreen(
     viewModel: AuthViewModel = koinViewModel()
 ) {
 
+    val context= LocalContext.current
+
+    val userId = remember { getUserId(context) }
     var password by remember { mutableStateOf("") }
     var password2 by remember { mutableStateOf("") }
 
@@ -97,7 +105,19 @@ fun PasswordScreen(
         Spacer(modifier = Modifier.height(50.dp))
         AppButton(
             onClick = {
-                viewModel.setPassword(password, password2)
+
+                val passwordData = PasswordRequest(
+                   password=password,
+                    confirmPassword = password2
+                )
+
+
+                if (userId == null) {
+                    Log.e("profile", "Cannot submit profile because userId is null")
+                } else {
+                    viewModel.setPassword(userId, passwordData)
+                }
+
 
             },
             text = "Submit"

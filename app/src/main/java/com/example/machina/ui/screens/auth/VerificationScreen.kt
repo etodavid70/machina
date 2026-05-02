@@ -30,6 +30,7 @@ import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
 import com.example.machina.utils.getEmail
+import com.example.machina.utils.saveUserId
 import com.example.machina.view_model.auth_viewmodel.AuthStep
 import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
@@ -52,6 +53,7 @@ fun VerificationScreen(
     LaunchedEffect(Unit) {
         viewModel.state.collectLatest { state ->
             if (state is AuthUiState.Success && state.step == AuthStep.EmailVerified) {
+                state.userId?.let { saveUserId(context, it) }
                 viewModel.resetState()
                 navController.navigate("profile")
             }

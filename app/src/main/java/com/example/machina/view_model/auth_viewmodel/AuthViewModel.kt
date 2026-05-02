@@ -3,6 +3,7 @@ package com.example.machina.view_model.auth_viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.machina.data.model.onboarding_models.PasswordRequest
 import com.example.machina.data.model.onboarding_models.ProfileRequest
 import com.example.machina.data.repository.AuthRepository
 import retrofit2.HttpException
@@ -42,9 +43,9 @@ class AuthViewModel (
             _state.value = AuthUiState.Loading
 
             try {
-                repository.verifyCode(email, code)
+                val userId = repository.verifyCode(email, code)
                 Log.d("verify", email.toString())
-                _state.value = AuthUiState.Success(AuthStep.EmailVerified)
+                _state.value = AuthUiState.Success(AuthStep.EmailVerified, userId)
             } catch (e: Exception) {
                 Log.d("verify error", e.toString())
                 _state.value = AuthUiState.Error(e.authErrorMessage("Invalid code"))
@@ -52,29 +53,41 @@ class AuthViewModel (
         }
     }
 
-    fun submitProfile(profile: ProfileRequest) {
+    fun submitProfile(userId: String, profile: ProfileRequest) {
 
         viewModelScope.launch {
 
             _state.value = AuthUiState.Loading
+            Log.d("profile request", "userId=$userId, body=$profile")
 
             try {
-                repository.submitProfile(profile)
+                repository.submitProfile(userId, profile)
                 _state.value = AuthUiState.Success(AuthStep.ProfileSubmitted)
             } catch (e: Exception) {
-                _state.value = AuthUiState.Error(e.authErrorMessage("Profile failed"))
+                val errorMessage = e.authErrorMessage("Profile failed")
+                if (e is HttpException) {
+                    val response = e.response()
+                    Log.e(
+                        "profile response",
+                        "code=${e.code()}, message=${e.message()}, url=${response?.raw()?.request?.url}, body=$errorMessage",
+                        e
+                    )
+                } else {
+                    Log.e("profile response", "body=$errorMessage", e)
+                }
+                _state.value = AuthUiState.Error(errorMessage)
             }
         }
     }
 
-    fun setPassword(password: String, confirm: String) {
+    fun setPassword(userId: String, passwordData: PasswordRequest ) {
 
         viewModelScope.launch {
 
             _state.value = AuthUiState.Loading
 
             try {
-                repository.setPassword(password, confirm)
+                repository.setPassword(userId, passwordData)
                 _state.value = AuthUiState.Success(AuthStep.PasswordSet)
             } catch (e: Exception) {
                 _state.value = AuthUiState.Error(e.authErrorMessage("Password failed"))

@@ -18,16 +18,18 @@ class AuthRepository (
         api.sendEmail(EmailRequest(email)).requireSuccessful()
     }
 
-    suspend fun verifyCode(email: String, code: String) {
-        api.verifyCode(VerifyCodeRequest(email, code)).requireSuccessful()
+    suspend fun verifyCode(email: String, code: String): String? {
+        return api.verifyCode(VerifyCodeRequest(email, code))
+            .requireSuccessful()
+            ?.resolvedUserId()
     }
 
-    suspend fun submitProfile(profile: ProfileRequest) {
-        api.submitProfile(profile).requireSuccessful()
+    suspend fun submitProfile(userId: String, profile: ProfileRequest) {
+        api.submitProfile(userId, profile).requireSuccessful()
     }
 
-    suspend fun setPassword(password: String, confirm: String) {
-        api.setPassword(PasswordRequest(password, confirm)).requireSuccessful()
+    suspend fun setPassword(userId: String, passwordData:  PasswordRequest) {
+        api.setPassword(userId, passwordData).requireSuccessful()
     }
 
     suspend fun login(email: String, password: String) {
@@ -35,8 +37,9 @@ class AuthRepository (
     }
 }
 
-private fun <T> Response<T>.requireSuccessful() {
+private fun <T> Response<T>.requireSuccessful(): T? {
     if (!isSuccessful) {
         throw HttpException(this)
     }
+    return body()
 }

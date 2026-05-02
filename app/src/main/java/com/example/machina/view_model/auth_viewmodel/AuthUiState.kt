@@ -7,7 +7,8 @@ sealed class AuthUiState {
     object Loading : AuthUiState()
 
     data class Success(
-        val step: AuthStep
+        val step: AuthStep,
+        val userId: String? = null
     ) : AuthUiState()
 
     data class Error(
