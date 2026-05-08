@@ -5,6 +5,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -12,22 +14,24 @@ import androidx.navigation.NavController
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_cards.ActiveMachineryCard
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_cards.CloudInstancesCard
 import com.example.machina.ui.widgets.AppText
+import com.example.machina.view_model.dashboard_viewmodel.CloudInstanceViewModel
 import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
 
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    cloudInstanceViewModel: CloudInstanceViewModel,
     navController: NavController
 ) {
-    //load dummy or api data
     LaunchedEffect(Unit) {
         viewModel.refresh()
+        cloudInstanceViewModel.fetchInstances()
     }
 
 
     val vmList = viewModel.vmList
-    val cloudList = viewModel.cloudList
+    val cloudList by cloudInstanceViewModel.instances.collectAsState()
 
 //    Log.d("vmlist", vmList.toString())
 //    Log.d("cloudlist", cloudList.toString())

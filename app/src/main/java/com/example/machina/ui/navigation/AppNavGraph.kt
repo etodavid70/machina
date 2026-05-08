@@ -21,9 +21,12 @@ import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages
 import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
 import com.example.machina.ui.screens.dashboard.profile.ProfileScreen
 import com.example.machina.ui.screens.dashboard.settings.SettingsScreen
+import com.example.machina.view_model.dashboard_viewmodel.CloudInstanceViewModel
 import com.example.machina.view_model.dashboard_viewmodel.CreateVmViewModel
 import com.example.machina.view_model.dashboard_viewmodel.DeviceInfoViewModel
 import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
+import com.example.machina.view_model.dashboard_viewmodel.SshConnectionViewModel
+import org.koin.androidx.compose.koinViewModel
 
 //define your screens class
 sealed class Screen(val route: String) {
@@ -55,6 +58,10 @@ fun NavigationGraph(navController: NavHostController) {
 
     val deviceInfoViewModel: DeviceInfoViewModel= viewModel()
 
+    val cloudInstanceViewModel: CloudInstanceViewModel = koinViewModel()
+
+    val sshConnectionViewModel: SshConnectionViewModel = koinViewModel()
+
 
 
     NavHost(
@@ -66,19 +73,22 @@ fun NavigationGraph(navController: NavHostController) {
         composable(Screen.Home.route) {
             HomeScreen(
                 navController = navController,
-                viewModel = viewModel
+                viewModel = viewModel,
+                cloudInstanceViewModel = cloudInstanceViewModel
             )
         }
         composable(Screen.Settings.route) { SettingsScreen() }
         composable(Screen.Profile.route) { ProfileScreen() }
 
         //other screens
-        composable(Screen.ConnectCloud.route) { ConnectToACloudInstance(navController) }
+        composable(Screen.ConnectCloud.route) {
+            ConnectToACloudInstance(navController, sshConnectionViewModel)
+        }
         composable(Screen.ViewCloud.route) {
 
             ViewCloudInstance(
                 navController,
-                viewModel.cloudList
+                cloudInstanceViewModel
             )
         }
 

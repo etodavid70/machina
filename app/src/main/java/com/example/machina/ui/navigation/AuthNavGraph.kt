@@ -20,7 +20,7 @@ fun AuthNavGraph() {
 
     NavHost(
         navController = navController,
-        startDestination = "email"
+        startDestination = "login"
     ) {
 
         composable("email") { EmailScreen(navController) }

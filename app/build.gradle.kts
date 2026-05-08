@@ -77,6 +77,7 @@ dependencies {
 
     //async image
     implementation(libs.coil.compose)
+    implementation(libs.jsch)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -85,6 +86,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
-
 
 

@@ -13,13 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.machina.data.model.dashboard_models.CloudInstances
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.BackButton
 import androidx.compose.foundation.lazy.items
@@ -29,23 +29,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
 import coil.compose.AsyncImage
 import com.example.machina.R
 import com.example.machina.ui.widgets.AppPopupModal
+import com.example.machina.data.model.dashboard_models.CloudInstance
+import com.example.machina.view_model.dashboard_viewmodel.CloudInstanceViewModel
 
 @Composable
 fun ViewCloudInstance(
     navController: NavController,
-    cloudList: List<CloudInstances>,
+    viewModel: CloudInstanceViewModel,
 ) {
 
     var showDialog by remember { mutableStateOf(false) }
+    val cloudList by viewModel.instances.collectAsState()
 
-    val viewModel: HomeViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.refresh()
+        viewModel.fetchInstances()
     }
 
     Column(
@@ -120,7 +120,7 @@ fun ViewCloudInstance(
 
 @Composable
 fun CloudInstanceItem(
-    instance: CloudInstances,
+    instance: CloudInstance,
     buttonText: String,
     onButtonClick: () -> Unit,
 ) {
@@ -146,10 +146,11 @@ fun CloudInstanceItem(
 //
             AppText(text = instance.name, fontWeight = FontWeight.Bold, fontSize = 25.sp)
             AppText(text = "Provider : ${instance.serviceProvider}", fontWeight = FontWeight.Medium)
+            AppText(text = "IP : ${instance.publicIp}:${instance.port}", fontWeight = FontWeight.Medium)
             Spacer(modifier = Modifier.height(8.dp))
 
             AppText(
-                text = "${instance.vmDetails.ram}| ${instance.vmDetails.storage}| ${instance.vmDetails.cpu}",
+                text = "${instance.ram} | ${instance.storage} | ${instance.cpu} | ${instance.osVersion}",
                 fontWeight = FontWeight.Light
             )
 

@@ -6,14 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.machina.R
-import com.example.machina.data.model.dashboard_models.CloudInstances
+import com.example.machina.data.model.dashboard_models.CloudInstance
 import com.example.machina.ui.screens.dashboard.home.widgets.VmDataCard
 import com.example.machina.ui.theme.AppOrange
 
 
 @Composable
 fun CloudInstancesCard(
-    cloudList: List<CloudInstances>,
+    cloudList: List<CloudInstance>,
     onCreateClick: () -> Unit
 ) {
 
@@ -32,10 +32,11 @@ fun CloudInstancesCard(
                 AppOrange
             )
         } else {
+            val runningCount = cloudList.count { it.status.equals("running", ignoreCase = true) }
 
             VmDataCard(
                 onButtonClick = onCreateClick,
-                cardText = "(${cloudList.size}) Running Instances",
+                cardText = "($runningCount/${cloudList.size}) Running Instances",
                 buttonText = "View Instances",
                 backgroundColor = AppOrange,
                 imageRes = R.drawable.cloud_instances // or dynamic later
