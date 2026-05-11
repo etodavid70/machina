@@ -66,8 +66,6 @@ fun ViewCloudInstance(
             )
         }
 
-
-
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -96,9 +94,6 @@ fun ViewCloudInstance(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-
-
-
 
 
         AppPopupModal(
@@ -162,9 +157,5 @@ fun CloudInstanceItem(
             )
 
         }
-
-
     }
-
-
 }

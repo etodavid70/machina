@@ -3,6 +3,7 @@ package com.example.machina.view_model.dashboard_viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.machina.data.model.dashboard_models.SshConnectionRequest
+import com.example.machina.data.repository.SshShellConnection
 import com.example.machina.data.repository.SshConnectionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,6 +56,17 @@ class SshConnectionViewModel(
     }
 
     fun hasActiveConnection(): Boolean = activeConnectionRequest != null
+
+    fun getActiveConnectionRequest(): SshConnectionRequest? = activeConnectionRequest
+
+    fun openInteractiveShell(
+        columns: Int = 80,
+        rows: Int = 24
+    ): SshShellConnection {
+        val request = activeConnectionRequest
+            ?: throw IllegalStateException("Connect to a server first.")
+        return repository.openShell(request, columns, rows)
+    }
 
     fun runTerminalCommand(command: String) {
         val request = activeConnectionRequest

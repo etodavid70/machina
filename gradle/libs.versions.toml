@@ -20,6 +20,7 @@ coil = "2.5.0"
 lifecycle = "2.6.2"
 compose = "1.6.0"
 jsch = "2.28.2"
+terminalEmulator = "1.0.70"
 
 
 [libraries]
@@ -63,6 +64,7 @@ compose-icons = { group = "androidx.compose.material", name = "material-icons-ex
 #for async image
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 jsch = { module = "com.github.mwiede:jsch", version.ref = "jsch" }
+terminal-emulator = { module = "com.github.jackpal:Android-Terminal-Emulator", version.ref = "terminalEmulator" }
 
 #for statemanagement
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
@@ -74,5 +76,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 #kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-
 

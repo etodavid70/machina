@@ -3,10 +3,13 @@ package com.example.machina.data.repository
 import com.example.machina.data.model.dashboard_models.SshConnectionRequest
 import com.example.machina.data.model.dashboard_models.SshConnectionResult
 import com.jcraft.jsch.ChannelExec
+import com.jcraft.jsch.ChannelShell
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
 import com.jcraft.jsch.Session
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.Properties
@@ -55,6 +58,43 @@ class SshConnectionRepository {
             if (session.isConnected) {
                 session.disconnect()
             }
+        }
+    }
+
+    fun openShell(
+        request: SshConnectionRequest,
+        columns: Int = DEFAULT_TERMINAL_COLUMNS,
+        rows: Int = DEFAULT_TERMINAL_ROWS
+    ): SshShellConnection {
+        val session = createSession(request)
+
+        try {
+            session.connect(CONNECT_TIMEOUT_MS)
+
+            val channel = session.openChannel("shell") as ChannelShell
+            channel.setPty(true)
+            channel.setPtyType("xterm-256color")
+            channel.setPtySize(columns, rows, 0, 0)
+
+            val input = channel.inputStream
+            val output = channel.outputStream
+
+            channel.connect(CONNECT_TIMEOUT_MS)
+
+            return SshShellConnection(
+                session = session,
+                channel = channel,
+                input = input,
+                output = output
+            )
+        } catch (e: Exception) {
+            if (session.isConnected) {
+                session.disconnect()
+            }
+            if (e is JSchException) {
+                throw IllegalStateException(buildFailureMessage(request, e), e)
+            }
+            throw e
         }
     }
 
@@ -157,6 +197,8 @@ class SshConnectionRepository {
     private companion object {
         const val CONNECT_TIMEOUT_MS = 15_000
         const val COMMAND_TIMEOUT_MS = 10_000
+        const val DEFAULT_TERMINAL_COLUMNS = 80
+        const val DEFAULT_TERMINAL_ROWS = 24
     }
 }
 
@@ -165,3 +207,25 @@ data class SshCommandResult(
     val error: String,
     val exitStatus: Int
 )
+
+class SshShellConnection(
+    private val session: Session,
+    private val channel: ChannelShell,
+    val input: InputStream,
+    val output: OutputStream
+) {
+    fun resize(columns: Int, rows: Int) {
+        if (channel.isConnected) {
+            channel.setPtySize(columns, rows, 0, 0)
+        }
+    }
+
+    fun disconnect() {
+        if (channel.isConnected) {
+            channel.disconnect()
+        }
+        if (session.isConnected) {
+            session.disconnect()
+        }
+    }
+}
