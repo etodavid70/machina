@@ -5,6 +5,7 @@ import com.example.machina.data.model.dashboard_models.SshConnectionResult
 import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
+import com.jcraft.jsch.Session
 import java.io.ByteArrayOutputStream
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -13,6 +14,51 @@ import java.util.Properties
 class SshConnectionRepository {
 
     fun connect(request: SshConnectionRequest): SshConnectionResult {
+        val session = createSession(request)
+
+        try {
+            session.connect(CONNECT_TIMEOUT_MS)
+
+            val output = runCommand(
+                session = session,
+                command = "printf 'connected:%s@%s' \"$(whoami)\" \"$(hostname)\"",
+                timeoutMs = COMMAND_TIMEOUT_MS
+            ).output
+
+            return SshConnectionResult(
+                host = request.host.trim(),
+                username = request.username.trim(),
+                port = request.port,
+                output = output.ifBlank { "SSH connection established." }
+            )
+        } catch (e: JSchException) {
+            throw IllegalStateException(buildFailureMessage(request, e), e)
+        } finally {
+            if (session.isConnected) {
+                session.disconnect()
+            }
+        }
+    }
+
+    fun executeCommand(request: SshConnectionRequest, command: String): SshCommandResult {
+        val trimmedCommand = command.trim()
+        require(trimmedCommand.isNotBlank()) { "Enter a command to run." }
+
+        val session = createSession(request)
+
+        try {
+            session.connect(CONNECT_TIMEOUT_MS)
+            return runCommand(session, trimmedCommand, COMMAND_TIMEOUT_MS)
+        } catch (e: JSchException) {
+            throw IllegalStateException(buildFailureMessage(request, e), e)
+        } finally {
+            if (session.isConnected) {
+                session.disconnect()
+            }
+        }
+    }
+
+    private fun createSession(request: SshConnectionRequest): Session {
         val jsch = JSch()
 
         request.privateKey?.let { privateKey ->
@@ -35,24 +81,7 @@ class SshConnectionRepository {
         session.setConfig(config)
         session.timeout = CONNECT_TIMEOUT_MS
 
-        try {
-            session.connect(CONNECT_TIMEOUT_MS)
-
-            val output = runValidationCommand(session)
-
-            return SshConnectionResult(
-                host = request.host.trim(),
-                username = request.username.trim(),
-                port = request.port,
-                output = output.ifBlank { "SSH connection established." }
-            )
-        } catch (e: JSchException) {
-            throw IllegalStateException(buildFailureMessage(request, e), e)
-        } finally {
-            if (session.isConnected) {
-                session.disconnect()
-            }
-        }
+        return session
     }
 
     private fun preferredAuthentications(request: SshConnectionRequest): String {
@@ -63,20 +92,24 @@ class SshConnectionRepository {
         }
     }
 
-    private fun runValidationCommand(session: com.jcraft.jsch.Session): String {
+    private fun runCommand(
+        session: Session,
+        command: String,
+        timeoutMs: Int
+    ): SshCommandResult {
         val channel = session.openChannel("exec") as ChannelExec
         val output = ByteArrayOutputStream()
         val error = ByteArrayOutputStream()
 
-        channel.setCommand("printf 'connected:%s@%s' \"$(whoami)\" \"$(hostname)\"")
+        channel.setCommand(command)
         channel.inputStream = null
         channel.outputStream = output
         channel.setErrStream(error)
 
         try {
-            channel.connect(COMMAND_TIMEOUT_MS)
+            channel.connect(timeoutMs)
 
-            val deadline = System.currentTimeMillis() + COMMAND_TIMEOUT_MS
+            val deadline = System.currentTimeMillis() + timeoutMs
             while (!channel.isClosed && System.currentTimeMillis() < deadline) {
                 Thread.sleep(100)
             }
@@ -90,7 +123,11 @@ class SshConnectionRepository {
                 throw IllegalStateException(errorMessage)
             }
 
-            return output.toString(Charsets.UTF_8.name()).trim()
+            return SshCommandResult(
+                output = output.toString(Charsets.UTF_8.name()).trim(),
+                error = errorMessage,
+                exitStatus = channel.exitStatus
+            )
         } finally {
             if (channel.isConnected) {
                 channel.disconnect()
@@ -122,3 +159,9 @@ class SshConnectionRepository {
         const val COMMAND_TIMEOUT_MS = 10_000
     }
 }
+
+data class SshCommandResult(
+    val output: String,
+    val error: String,
+    val exitStatus: Int
+)

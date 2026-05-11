@@ -17,6 +17,7 @@ import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.c
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.ViewOsTypes
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.view_vm.ViewActiveMachinery
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ConnectToACloudInstance
+import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.TerminalScreen
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ViewCloudInstance
 import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
 import com.example.machina.ui.screens.dashboard.profile.ProfileScreen
@@ -35,6 +36,7 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
 
     object ConnectCloud : Screen("connect_cloud")
+    object Terminal : Screen("terminal")
     object ViewCloud : Screen("view_cloud_instances")
 
     object CreateVM : Screen("create_vm")
@@ -83,6 +85,9 @@ fun NavigationGraph(navController: NavHostController) {
         //other screens
         composable(Screen.ConnectCloud.route) {
             ConnectToACloudInstance(navController, sshConnectionViewModel)
+        }
+        composable(Screen.Terminal.route) {
+            TerminalScreen(navController, sshConnectionViewModel)
         }
         composable(Screen.ViewCloud.route) {
 
