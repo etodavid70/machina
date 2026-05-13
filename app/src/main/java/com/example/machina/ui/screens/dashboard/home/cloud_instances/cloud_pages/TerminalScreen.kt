@@ -1,5 +1,6 @@
 package com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import jackpal.androidterm.emulatorview.TermSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+@SuppressLint("ClickableViewAccessibility")
 @Composable
 fun TerminalScreen(
     navController: NavController,
@@ -63,12 +65,14 @@ fun TerminalScreen(
                 viewModel.openInteractiveShell()
             }
             val session = TermSession().apply {
-                setTermIn(shell.input)
-                setTermOut(shell.output)
+                termIn = shell.input
+                termOut = shell.output
                 setDefaultUTF8Mode(true)
                 setColorScheme(ColorScheme(0xFFE5E7EB.toInt(), 0xFF101418.toInt()))
                 initializeEmulator(DEFAULT_COLUMNS, DEFAULT_ROWS)
             }
+
+
 
             shellConnection = shell
             terminalSession = session
@@ -153,12 +157,37 @@ fun TerminalScreen(
                                 viewContext.resources.displayMetrics
                             ).apply {
                                 terminalView = this
+
+                                attachSession(terminalSession) // <-- ADD THIS
+
                                 setTextSize(14)
                                 setTermType("xterm-256color")
-                                setUseCookedIME(false)
+                                setUseCookedIME(true)
                                 setFocusableInTouchMode(true)
+
+//                                requestFocus()
+//                                focusAndShowKeyboard(this)
+
+                                post {
+                                    requestFocus()
+                                    focusAndShowKeyboard(this)
+                                }
+
+                                isFocusable = true
+                                isFocusableInTouchMode = true
                                 requestFocus()
+
+                                setUseCookedIME(true)
+
                                 onResume()
+
+                                setOnTouchListener { touchedView, event ->
+                                    if (event.action == android.view.MotionEvent.ACTION_UP) {
+                                        touchedView.requestFocus()
+                                        focusAndShowKeyboard(touchedView)
+                                    }
+                                    false
+                                }
 
                                 addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
                                     resizeRemotePty(view, shellConnection)
@@ -167,16 +196,12 @@ fun TerminalScreen(
                                 post {
                                     updateSize(true)
                                     resizeRemotePty(this, shellConnection)
-                                    requestFocus()
-                                    viewContext
-                                        .getSystemService<InputMethodManager>()
-                                        ?.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+                                    focusAndShowKeyboard(this)
                                 }
                             }
                         },
                         update = { view ->
                             view.onResume()
-                            view.requestFocus()
                             view.updateSize(true)
                             resizeRemotePty(view, shellConnection)
                         },
@@ -188,6 +213,13 @@ fun TerminalScreen(
             }
         }
     }
+}
+
+private fun focusAndShowKeyboard(view: View) {
+    view.requestFocus()
+    view.context
+        .getSystemService<InputMethodManager>()
+        ?.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
 }
 
 private fun resizeRemotePty(

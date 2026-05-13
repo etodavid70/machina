@@ -8,6 +8,7 @@ private const val PREFS_NAME = "onboarding_prefs"
 private const val KEY_ONBOARDING_SEEN = "onboarding_seen"
 private const val KEY_EMAIL = "saved_email"
 private const val KEY_USER_ID = "saved_user_id"
+private const val KEY_SIGNUP_COMPLETED = "signup_completed"
 
 fun saveOnboardingSeen(context: Context) {
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -38,4 +39,14 @@ fun saveUserId(context: Context, userId: String) {
 fun getUserId(context: Context): String? {
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     return prefs.getString(KEY_USER_ID, null)
+}
+
+fun saveSignupCompleted(context: Context) {
+    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    prefs.edit { putBoolean(KEY_SIGNUP_COMPLETED, true) }
+}
+
+fun hasCompletedSignup(context: Context): Boolean {
+    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    return prefs.getBoolean(KEY_SIGNUP_COMPLETED, false)
 }

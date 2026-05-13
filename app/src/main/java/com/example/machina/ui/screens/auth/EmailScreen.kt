@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,6 +34,7 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
+import com.example.machina.ui.widgets.AuthErrorSnackbar
 import com.example.machina.utils.getEmail
 import com.example.machina.utils.saveEmail
 import com.example.machina.view_model.auth_viewmodel.AuthStep
@@ -48,9 +52,17 @@ fun EmailScreen(
 ) {
 
     val context = LocalContext.current
+    val state by viewModel.state.collectAsState()
+    val isLoading = state is AuthUiState.Loading
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var email by remember { mutableStateOf("") }
 
+    AuthErrorSnackbar(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onMessageShown = viewModel::resetState
+    )
 
 
     LaunchedEffect(Unit) {
@@ -63,13 +75,17 @@ fun EmailScreen(
     }
 
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 10.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 10.dp, vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
 
 
 
@@ -124,7 +140,9 @@ fun EmailScreen(
 
 
                       },
-            text = "Send Verification Code"
+            text = "Send Verification Code",
+            isLoading = isLoading
         )
+        }
     }
 }

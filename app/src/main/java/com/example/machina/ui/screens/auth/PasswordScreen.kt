@@ -6,8 +6,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +32,9 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.AppPasswordField
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
+import com.example.machina.ui.widgets.AuthErrorSnackbar
 import com.example.machina.utils.getUserId
+import com.example.machina.utils.saveSignupCompleted
 import com.example.machina.view_model.auth_viewmodel.AuthStep
 import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
@@ -46,25 +52,42 @@ fun PasswordScreen(
     val context= LocalContext.current
 
     val userId = remember { getUserId(context) }
+    val state by viewModel.state.collectAsState()
+    val isLoading = state is AuthUiState.Loading
+    val snackbarHostState = remember { SnackbarHostState() }
     var password by remember { mutableStateOf("") }
     var password2 by remember { mutableStateOf("") }
+
+    AuthErrorSnackbar(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onMessageShown = viewModel::resetState
+    )
 
     LaunchedEffect(Unit) {
         viewModel.state.collectLatest { state ->
             if (state is AuthUiState.Success && state.step == AuthStep.PasswordSet) {
+                saveSignupCompleted(context)
                 viewModel.resetState()
-                navController.navigate("login")
+                navController.navigate("login") {
+                    popUpTo("email") { inclusive = true }
+                    launchSingleTop = true
+                }
             }
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 10.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 10.dp, vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
 
 
 
@@ -108,7 +131,7 @@ fun PasswordScreen(
 
                 val passwordData = PasswordRequest(
                    password=password,
-                    confirmPassword = password2
+                    confirm_password = password2
                 )
 
 
@@ -120,7 +143,9 @@ fun PasswordScreen(
 
 
             },
-            text = "Submit"
+            text = "Submit",
+            isLoading = isLoading
         )
+        }
     }
 }

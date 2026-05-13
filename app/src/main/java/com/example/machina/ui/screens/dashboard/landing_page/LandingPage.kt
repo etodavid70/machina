@@ -14,8 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.machina.ui.navigation.NavigationGraph
+import com.example.machina.ui.navigation.items
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,6 +26,8 @@ import com.example.machina.ui.navigation.NavigationGraph
 fun LandingPage() {
     val isDarkTheme = rememberSaveable { mutableStateOf(false) }
     val navController = rememberNavController()
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    val showBottomBar = items.any { it.route == currentRoute }
 
 
     MaterialTheme(
@@ -31,7 +35,9 @@ fun LandingPage() {
     ) {
         Scaffold(
             bottomBar = {
-                BottomNavigationBar(navController)
+                if (showBottomBar) {
+                    BottomNavigationBar(navController)
+                }
             },
         ) { padding ->
 

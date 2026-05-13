@@ -6,6 +6,7 @@ import com.example.machina.data.model.dashboard_models.CloudInstance
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.example.machina.utils.backendErrorMessage
 
 
 class CloudInstanceViewModel(
@@ -18,16 +19,25 @@ class CloudInstanceViewModel(
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
     fun fetchInstances() {
         viewModelScope.launch {
             _loading.value = true
+            _errorMessage.value = null
             try {
                 _instances.value = repository.getCloudInstances()
             } catch (e: Exception) {
+                _errorMessage.value = e.backendErrorMessage("Failed to load cloud instances")
                 e.printStackTrace()
             } finally {
                 _loading.value = false
             }
         }
+    }
+
+    fun clearError() {
+        _errorMessage.value = null
     }
 }

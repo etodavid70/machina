@@ -251,29 +251,29 @@ fun ConnectToACloudInstance(
 
             Spacer(Modifier.height(16.dp))
 
-            validationError?.let {
-                Text(
-                    text = it,
-                    color = Color.Red,
-                    textAlign = TextAlign.Center
-                )
-            }
+//            validationError?.let {
+//                Text(
+//                    text = it,
+//                    color = Color.Red,
+//                    textAlign = TextAlign.Center
+//                )
+//            }
 
-            when (val currentState = state) {
-                is SshConnectionUiState.Error -> Text(
-                    text = currentState.message,
-                    color = Color.Red,
-                    textAlign = TextAlign.Center
-                )
+//            when (val currentState = state) {
+//                is SshConnectionUiState.Error -> Text(
+//                    text = currentState.message,
+//                    color = Color.Red,
+//                    textAlign = TextAlign.Center
+//                )
 
-                SshConnectionUiState.Idle -> Unit
-                SshConnectionUiState.Loading -> CircularProgressIndicator(color = AppGreen)
-                is SshConnectionUiState.Success -> Text(
-                    text = "Connected: ${currentState.result.output}",
-                    color = AppGreen,
-                    textAlign = TextAlign.Center
-                )
-            }
+//                SshConnectionUiState.Idle -> Unit
+//                SshConnectionUiState.Loading -> CircularProgressIndicator(color = AppGreen)
+//                is SshConnectionUiState.Success -> Text(
+//                    text = "Connected: ${currentState.result.output}",
+//                    color = AppGreen,
+//                    textAlign = TextAlign.Center
+//                )
+//            }
         }
     }
 }

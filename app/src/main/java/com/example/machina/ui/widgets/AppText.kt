@@ -18,6 +18,7 @@ fun AppText(
     color: Color = Color.Black,
     textAlign: TextAlign = TextAlign.Start,
     maxLines: Int = Int.MAX_VALUE,
+    modifier: Modifier = Modifier
 ) {
     Text(
         text = text,
@@ -26,6 +27,7 @@ fun AppText(
         color = color,
         textAlign = textAlign,
         maxLines = maxLines,
-        fontFamily = FontFamily.Default
+        fontFamily = FontFamily.Default,
+        modifier = modifier
     )
 }

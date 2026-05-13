@@ -6,10 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.machina.data.model.onboarding_models.PasswordRequest
 import com.example.machina.data.model.onboarding_models.ProfileRequest
 import com.example.machina.data.repository.AuthRepository
-import retrofit2.HttpException
+import com.example.machina.utils.backendErrorMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class AuthViewModel (
     private val repository: AuthRepository
@@ -20,9 +21,7 @@ class AuthViewModel (
 
 
 
-    fun sendEmail(email: String) {
-
-
+    fun sendEmail(email: String){
         viewModelScope.launch {
             _state.value = AuthUiState.Loading
 
@@ -118,10 +117,6 @@ class AuthViewModel (
     }
 
     private fun Exception.authErrorMessage(fallback: String): String {
-        return if (this is HttpException) {
-            response()?.errorBody()?.string()?.takeIf { it.isNotBlank() } ?: fallback
-        } else {
-            message?.takeIf { it.isNotBlank() } ?: fallback
-        }
+        return backendErrorMessage(fallback)
     }
 }

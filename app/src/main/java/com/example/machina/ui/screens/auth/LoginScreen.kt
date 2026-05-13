@@ -13,6 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Text
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,17 +40,21 @@ import com.example.machina.ui.widgets.AppPasswordField
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextFieldRounded
 import com.example.machina.ui.widgets.BackButton
+import com.example.machina.ui.widgets.AuthErrorSnackbar
 import com.example.machina.ui.widgets.AppPopupModal
+import com.example.machina.utils.saveSignupCompleted
 import com.example.machina.view_model.auth_viewmodel.AuthStep
 import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun LoginScreen(
     navController: NavController,
     viewModel: AuthViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -53,10 +62,20 @@ fun LoginScreen(
     var showDialog by remember { mutableStateOf(false) }
     var biometricStatus by remember { mutableStateOf(false) }
 
-    val state = viewModel.state.collectAsState()
-    LaunchedEffect(state.value) {
-        val currentState = state.value
+    val state by viewModel.state.collectAsState()
+    val isLoading = state is AuthUiState.Loading
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    AuthErrorSnackbar(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onMessageShown = viewModel::resetState
+    )
+
+    LaunchedEffect(state) {
+        val currentState = state
         if (currentState is AuthUiState.Success && currentState.step == AuthStep.LoggedIn) {
+            saveSignupCompleted(context)
             viewModel.resetState()
             navController.navigate("dashboard") {
                 popUpTo("login") { inclusive = true } // optional (removes login from backstack)
@@ -64,110 +83,137 @@ fun LoginScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 10.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-
-
-        Box(
-            modifier = Modifier.fillMaxWidth()
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 10.dp, vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            BackButton(
-                navController = navController,
-                modifier = Modifier.align(Alignment.CenterStart)
+
+
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                BackButton(
+                    navController = navController,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+
+            Image(
+                painter = painterResource(id = R.drawable.login),
+                contentDescription = "Background Image",
             )
-        }
 
-        Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
+            AppText(
+                "Login to Continue",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
 
-        Image(
-            painter = painterResource(id = R.drawable.login),
-            contentDescription = "Background Image",
-        )
+            Spacer(Modifier.height(16.dp))
 
-        Spacer(Modifier.height(16.dp))
-
-        AppText(
-            "Login to Continue",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        AppTextFieldRounded(
-            value = email,
-            onValueChange = { email = it },
-            placeholder = "Email",
+            AppTextFieldRounded(
+                value = email,
+                onValueChange = { email = it },
+                placeholder = "Email",
 //            borderColor = AppGreen
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        AppPasswordField(
-            value = password,
-            onValueChange = { password = it },
-            placeholder = "Password",
-            borderColor = AppGreen
-        )
+            AppPasswordField(
+                value = password,
+                onValueChange = { password = it },
+                placeholder = "Password",
+                borderColor = AppGreen
+            )
 
-        Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-        Row(
+            Row(
 
-        ) {
+            ) {
 
-            AppButton(
-                onClick = {
-                    viewModel.login(email, password)
+                AppButton(
+                    onClick = {
+                        viewModel.login(email, password)
 //                    navController.navigate("dashboard")
 
-                },
-                text = "Login",
-                modifier = Modifier
-                    .width(250.dp)
+                    },
+                    text = "Login",
+                    isLoading = isLoading,
+                    modifier = Modifier
+                        .width(250.dp)
+                )
+
+                Spacer(modifier = Modifier.width(25.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.biometrics),
+                    contentDescription = "biometric image",
+                    modifier = Modifier.clickable {
+                        showDialog = true
+
+                    }
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AppText(
+                "Forgot Password?",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                color = AppGreen
             )
 
-            Spacer(modifier = Modifier.width(50.dp))
-            Image(
-                painter = painterResource(id = R.drawable.biometrics),
-                contentDescription = "Background Image",
-                modifier = Modifier.clickable {
-                 showDialog=true
+            Spacer(modifier = Modifier.height(12.dp))
 
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppText(
+                    text = "Don't have an account? ",
+                    fontSize = 14.sp
+                )
+                AppText(
+                    text = "Sign up",
+                    color = AppGreen,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .clickable {
+                            navController.navigate("email")
+                        }
+                )
+            }
+
+            AppPopupModal(
+                showDialog = showDialog,
+                onDismiss = { showDialog = false },
+                imageRes = R.drawable.biometrics2,
+                title = "Fingerprint Authentication",
+                description = "Please use finger print to Login",
+                buttonText = "Close",
+                onButtonClick = {
+
+                    showDialog = false
+                    // handle action
                 }
             )
 
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        AppText(
-            "Forgot Password?",
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Light,
-            textAlign = TextAlign.Center,
-            color = AppGreen
-        )
-
-        AppPopupModal(
-            showDialog = showDialog,
-            onDismiss = { showDialog = false },
-            imageRes = R.drawable.biometrics2,
-            title = "Fingerprint Authentication",
-            description = "Please use finger print to Login",
-            buttonText = "Close",
-            onButtonClick = {
-
-                showDialog = false
-                // handle action
-            }
-        )
-
     }
 }

@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +33,7 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
+import com.example.machina.ui.widgets.AuthErrorSnackbar
 import com.example.machina.utils.getEmail
 import com.example.machina.utils.saveUserId
 import com.example.machina.view_model.auth_viewmodel.AuthStep
@@ -47,8 +52,17 @@ fun VerificationScreen(
 
     val context = LocalContext.current
     val savedEmail = remember { getEmail(context) }
+    val state by viewModel.state.collectAsState()
+    val isLoading = state is AuthUiState.Loading
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var code by remember { mutableStateOf("") }
+
+    AuthErrorSnackbar(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onMessageShown = viewModel::resetState
+    )
 
     LaunchedEffect(Unit) {
         viewModel.state.collectLatest { state ->
@@ -60,13 +74,17 @@ fun VerificationScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 10.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 10.dp, vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
 
 
 
@@ -111,7 +129,9 @@ fun VerificationScreen(
                 viewModel.verifyCode(savedEmail.toString(), code)
 //                navController.navigate("profile")
                       },
-            text = "Verify Code"
+            text = "Verify Code",
+            isLoading = isLoading
         )
+        }
     }
 }

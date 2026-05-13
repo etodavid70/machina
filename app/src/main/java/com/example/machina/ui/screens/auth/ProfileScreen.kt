@@ -12,6 +12,9 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import android.util.Log
 import androidx.compose.material3.TextField
@@ -19,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +43,7 @@ import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
+import com.example.machina.ui.widgets.AuthErrorSnackbar
 import com.example.machina.utils.getUserId
 import com.example.machina.view_model.auth_viewmodel.AuthStep
 import com.example.machina.view_model.auth_viewmodel.AuthUiState
@@ -61,6 +66,9 @@ fun ProfileScreen(
 
     val context = LocalContext.current
     val userId = remember { getUserId(context) }
+    val state by viewModel.state.collectAsState()
+    val isLoading = state is AuthUiState.Loading
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
@@ -76,6 +84,12 @@ fun ProfileScreen(
     }
     val genderOptions = listOf("Male", "Female")
 
+    AuthErrorSnackbar(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onMessageShown = viewModel::resetState
+    )
+
     LaunchedEffect(Unit) {
         viewModel.state.collectLatest { state ->
             if (state is AuthUiState.Success && state.step == AuthStep.ProfileSubmitted) {
@@ -85,13 +99,17 @@ fun ProfileScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 10.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 10.dp, vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
 
 
 
@@ -189,8 +207,10 @@ fun ProfileScreen(
                 }
 
             },
-            text = "Submit"
+            text = "Submit",
+            isLoading = isLoading
         )
+        }
     }
 
     if (showDatePicker) {
