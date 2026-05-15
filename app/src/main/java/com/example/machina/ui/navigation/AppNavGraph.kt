@@ -1,5 +1,6 @@
 package com.example.machina.ui.navigation
 
+import TerminalScreen
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -17,7 +18,7 @@ import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.c
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.ViewOsTypes
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.view_vm.ViewActiveMachinery
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ConnectToACloudInstance
-import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.TerminalScreen
+
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ViewCloudInstance
 import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
 import com.example.machina.ui.screens.dashboard.profile.ProfileScreen

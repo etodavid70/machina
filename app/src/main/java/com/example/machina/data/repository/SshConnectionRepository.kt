@@ -81,6 +81,9 @@ class SshConnectionRepository {
 
             channel.connect(CONNECT_TIMEOUT_MS)
 
+            output.write("\n".toByteArray())
+            output.flush()
+
             return SshShellConnection(
                 session = session,
                 channel = channel,
@@ -208,12 +211,14 @@ data class SshCommandResult(
     val exitStatus: Int
 )
 
+
 class SshShellConnection(
     private val session: Session,
     private val channel: ChannelShell,
-    val input: InputStream,
-    val output: OutputStream
-) {
+    val input: InputStream,   // SSH → Android
+    val output: OutputStream   // Android → SSH
+)
+ {
     fun resize(columns: Int, rows: Int) {
         if (channel.isConnected) {
             channel.setPtySize(columns, rows, 0, 0)

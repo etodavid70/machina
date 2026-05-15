@@ -33,9 +33,15 @@ fun AppTextField(
     modifier: Modifier = Modifier,
     textColor: Color = Color.Black,
     borderColor: Color = Color.Gray,
-    focusedBorderColor: Color = Color.Blue
+    focusedBorderColor: Color = Color.Blue,
+    errorText: String? = null
 ) {
     var isFocused by remember { mutableStateOf(false) }
+    val currentBorderColor = when {
+        errorText != null -> Color.Red
+        isFocused -> focusedBorderColor
+        else -> borderColor
+    }
 
     Column(modifier = modifier) {
 
@@ -66,8 +72,17 @@ fun AppTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(if (isFocused) focusedBorderColor else borderColor)
+                .background(currentBorderColor)
         )
+
+        errorText?.let {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = it,
+                color = Color.Red,
+                fontSize = 12.sp
+            )
+        }
     }
 }
 
@@ -80,7 +95,8 @@ fun AppTextFieldRounded(
     onValueChange: (String) -> Unit,
     placeholder: String,
     focusedBorderColor: Color = AppGreen,
-    unfocusedBorderColour: Color= AppGreenLight
+    unfocusedBorderColour: Color= AppGreenLight,
+    errorText: String? = null
 ) {
 
 
@@ -93,9 +109,17 @@ fun AppTextFieldRounded(
             Text(text = placeholder)
         },
         singleLine = true,
+        isError = errorText != null,
+        supportingText = {
+            errorText?.let {
+                Text(text = it, color = Color.Red)
+            }
+        },
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = focusedBorderColor,
-            unfocusedBorderColor = unfocusedBorderColour
+            unfocusedBorderColor = unfocusedBorderColour,
+            errorBorderColor = Color.Red,
+            errorCursorColor = Color.Red
         ),
         modifier = Modifier.fillMaxWidth()
     )

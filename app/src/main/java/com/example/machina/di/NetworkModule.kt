@@ -8,7 +8,7 @@ val networkModule = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("http://10.245.91.219:8000/")
+            .baseUrl("https://etotronics.pythonanywhere.com")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

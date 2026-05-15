@@ -26,7 +26,8 @@ fun AppPasswordField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String = "Enter password",
-    borderColor: Color = AppGreen
+    borderColor: Color = AppGreen,
+    errorText: String? = null
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -38,6 +39,12 @@ fun AppPasswordField(
             Text(text = placeholder)
         },
         singleLine = true,
+        isError = errorText != null,
+        supportingText = {
+            errorText?.let {
+                Text(text = it, color = Color.Red)
+            }
+        },
         visualTransformation = if (passwordVisible) {
             VisualTransformation.None
         } else {
@@ -62,7 +69,9 @@ fun AppPasswordField(
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = borderColor,
             unfocusedBorderColor = borderColor,
-            cursorColor = borderColor
+            cursorColor = borderColor,
+            errorBorderColor = Color.Red,
+            errorCursorColor = Color.Red
         ),
         modifier = Modifier.fillMaxWidth()
     )

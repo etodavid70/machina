@@ -57,6 +57,7 @@ fun VerificationScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     var code by remember { mutableStateOf("") }
+    var codeError by remember { mutableStateOf<String?>(null) }
 
     AuthErrorSnackbar(
         state = state,
@@ -117,16 +118,30 @@ fun VerificationScreen(
 
         AppTextField(
             value = code,
-            onValueChange = { code= it },
-            placeholder= "Resend Code ",
+            onValueChange = {
+                code = it.filter(Char::isDigit).take(6)
+                codeError = null
+                viewModel.resetState()
+            },
+            placeholder= "Enter 6 digit code",
             borderColor = Color.LightGray,
-            focusedBorderColor = AppGreen
+            focusedBorderColor = AppGreen,
+            errorText = codeError
         )
         Spacer(modifier = Modifier.height(50.dp))
 
         AppButton(
             onClick = {
-                viewModel.verifyCode(savedEmail.toString(), code)
+                if (code.length != 6) {
+                    codeError = "Enter the 6 digit verification code."
+                    return@AppButton
+                }
+                val email = savedEmail.orEmpty()
+                if (email.isBlank()) {
+                    codeError = "Email session expired. Please request a new code."
+                    return@AppButton
+                }
+                viewModel.verifyCode(email, code)
 //                navController.navigate("profile")
                       },
             text = "Verify Code",

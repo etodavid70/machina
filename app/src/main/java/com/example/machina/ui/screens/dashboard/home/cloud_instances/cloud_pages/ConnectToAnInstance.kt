@@ -71,6 +71,9 @@ fun ConnectToACloudInstance(
     var selectedFile by remember { mutableStateOf<Uri?>(null) }
     var selectedFileName by remember { mutableStateOf<String?>(null) }
     var validationError by remember { mutableStateOf<String?>(null) }
+    var usernameError by remember { mutableStateOf<String?>(null) }
+    var publicIpError by remember { mutableStateOf<String?>(null) }
+    var portError by remember { mutableStateOf<String?>(null) }
 
     val isLoading = state is SshConnectionUiState.Loading
 
@@ -149,10 +152,12 @@ fun ConnectToACloudInstance(
                 value = username,
                 onValueChange = {
                     username = it
+                    usernameError = null
                     validationError = null
                     viewModel.resetState()
                 },
-                placeholder = "Username"
+                placeholder = "Username",
+                errorText = usernameError
             )
             Spacer(Modifier.height(16.dp))
 
@@ -160,10 +165,12 @@ fun ConnectToACloudInstance(
                 value = publicIp,
                 onValueChange = {
                     publicIp = it
+                    publicIpError = null
                     validationError = null
                     viewModel.resetState()
                 },
                 placeholder = "Public IP Address",
+                errorText = publicIpError
 //            borderColor = AppGreen
             )
             Spacer(Modifier.height(16.dp))
@@ -171,10 +178,12 @@ fun ConnectToACloudInstance(
                 value = port,
                 onValueChange = {
                     port = it.filter(Char::isDigit)
+                    portError = null
                     validationError = null
                     viewModel.resetState()
                 },
-                placeholder = "SSH Port"
+                placeholder = "SSH Port",
+                errorText = portError
             )
             Spacer(Modifier.height(16.dp))
             AppPasswordField(
@@ -222,6 +231,29 @@ fun ConnectToACloudInstance(
                 onClick = {
                     Log.d("connect", "validating ssh connection form")
 
+                    val parsedPort = port.toIntOrNull()
+                    usernameError = if (username.trim().isBlank()) {
+                        "Username is required."
+                    } else {
+                        null
+                    }
+                    publicIpError = if (publicIp.trim().isBlank()) {
+                        "Public IP address is required."
+                    } else {
+                        null
+                    }
+                    portError = when {
+                        port.isBlank() -> "SSH port is required."
+                        parsedPort == null -> "Enter a valid SSH port."
+                        parsedPort !in 1..65535 -> "SSH port must be between 1 and 65535."
+                        else -> null
+                    }
+
+                    if (usernameError != null || publicIpError != null || portError != null) {
+                        validationError = null
+                        return@AppButton
+                    }
+
                     val request = buildSshConnectionRequest(
                         context = context,
                         host = publicIp,
@@ -232,7 +264,7 @@ fun ConnectToACloudInstance(
                         privateKeyName = selectedFileName
                     ).getOrElse { error ->
                         validationError = error.message
-                            ?: "Enter username, public IP, port, and a password or PEM key."
+                            ?: "Enter username, public IP, and a valid SSH port."
                         Log.e("connect", "validation error: $validationError")
                         return@AppButton
                     }
@@ -251,13 +283,13 @@ fun ConnectToACloudInstance(
 
             Spacer(Modifier.height(16.dp))
 
-//            validationError?.let {
-//                Text(
-//                    text = it,
-//                    color = Color.Red,
-//                    textAlign = TextAlign.Center
-//                )
-//            }
+            validationError?.let {
+                Text(
+                    text = it,
+                    color = Color.Red,
+                    textAlign = TextAlign.Center
+                )
+            }
 
 //            when (val currentState = state) {
 //                is SshConnectionUiState.Error -> Text(

@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import android.util.Patterns
 import com.example.machina.R
 import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
@@ -57,6 +58,7 @@ fun EmailScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     var email by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf<String?>(null) }
 
     AuthErrorSnackbar(
         state = state,
@@ -122,21 +124,34 @@ fun EmailScreen(
 //        )
         AppTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                emailError = null
+                viewModel.resetState()
+            },
             placeholder = "What email id do you want to use?",
             borderColor = Color.LightGray,
-            focusedBorderColor = AppGreen
+            focusedBorderColor = AppGreen,
+            errorText = emailError
         )
 
         Spacer(modifier = Modifier.height(50.dp))
 
         AppButton(
             onClick = {
+                val trimmedEmail = email.trim()
+                if (trimmedEmail.isBlank()) {
+                    emailError = "Email is required."
+                    return@AppButton
+                }
+                if (!Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches()) {
+                    emailError = "Enter a valid email address."
+                    return@AppButton
+                }
 
-//
-                viewModel.sendEmail(email)
+                viewModel.sendEmail(trimmedEmail)
                 Log.d("email saved", getEmail(context).toString())
-                saveEmail(context, email)
+                saveEmail(context, trimmedEmail)
 
 
                       },

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Machina Terminal</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            background: #0b0f14;
+        }
+        #terminal {
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+<div id="terminal"></div>
+
+<script>
+    const term = new Terminal({
+        fontSize: 14,
+        theme: {
+            background: "#0b0f14",
+            foreground: "#e5e7eb"
+        }
+    });
+
+    term.open(document.getElementById('terminal'));
+
+    // SEND INPUT TO ANDROID
+    term.onData(data => {
+        if (window.AndroidTerminal) {
+            window.AndroidTerminal.sendInput(data);
+        }
+    });
+
+    // RECEIVE OUTPUT FROM ANDROID
+    window.writeToTerminal = function(data) {
+        term.write(data);
+    };
+
+    // optional welcome
+    term.write("\r\n\x1b[32mConnected to Machina SSH Terminal\x1b[0m\r\n");
+</script>
+</body>
+</html>

@@ -76,6 +76,10 @@ fun ProfileScreen(
     var gender by remember { mutableStateOf("Male") }
     var showDatePicker by remember { mutableStateOf(false) }
     var showGenderDropdown by remember { mutableStateOf(false) }
+    var firstNameError by remember { mutableStateOf<String?>(null) }
+    var lastNameError by remember { mutableStateOf<String?>(null) }
+    var dateOfBirthError by remember { mutableStateOf<String?>(null) }
+    var formError by remember { mutableStateOf<String?>(null) }
     val datePickerState = rememberDatePickerState()
     val dateFormatter = remember {
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
@@ -137,28 +141,48 @@ fun ProfileScreen(
 
         AppTextField(
             value = firstName,
-            onValueChange = { firstName = it },
+            onValueChange = {
+                firstName = it
+                firstNameError = null
+                formError = null
+                viewModel.resetState()
+            },
             placeholder = "First Name",
             borderColor = Color.LightGray,
-            focusedBorderColor = AppGreen
+            focusedBorderColor = AppGreen,
+            errorText = firstNameError
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         AppTextField(
             value = lastName,
-            onValueChange = { lastName = it },
+            onValueChange = {
+                lastName = it
+                lastNameError = null
+                formError = null
+                viewModel.resetState()
+            },
             placeholder = "Last Name",
             borderColor = Color.LightGray,
-            focusedBorderColor = AppGreen
+            focusedBorderColor = AppGreen,
+            errorText = lastNameError
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         AppWhiteButton(
-            onClick = { showDatePicker = true },
+            onClick = {
+                showDatePicker = true
+                dateOfBirthError = null
+                formError = null
+            },
             text = dateOfBirth.ifBlank { "Select Date of Birth" }
         )
+        dateOfBirthError?.let {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = it, color = Color.Red, fontSize = 12.sp)
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -187,13 +211,45 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(50.dp))
 
+        formError?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
         AppButton(
 
             onClick = {
+                val trimmedFirstName = firstName.trim()
+                val trimmedLastName = lastName.trim()
+
+                firstNameError = when {
+                    trimmedFirstName.isBlank() -> "First name is required."
+                    trimmedFirstName.length < 2 -> "First name is too short."
+                    else -> null
+                }
+                lastNameError = when {
+                    trimmedLastName.isBlank() -> "Last name is required."
+                    trimmedLastName.length < 2 -> "Last name is too short."
+                    else -> null
+                }
+                dateOfBirthError = if (dateOfBirth.isBlank()) {
+                    "Date of birth is required."
+                } else {
+                    null
+                }
+
+                if (firstNameError != null || lastNameError != null || dateOfBirthError != null) {
+                    return@AppButton
+                }
+
                 Log.d("profile", "sending")
                 val profile = ProfileRequest(
-                    firstName = firstName,
-                    lastName = lastName,
+                    firstName = trimmedFirstName,
+                    lastName = trimmedLastName,
                     dob = dateOfBirth,
                     gender = gender.lowercase()
                 )
@@ -202,7 +258,9 @@ fun ProfileScreen(
 
                 if (userId == null) {
                     Log.e("profile", "Cannot submit profile because userId is null")
+                    formError = "User session expired. Please start again."
                 } else {
+                    formError = null
                     viewModel.submitProfile(userId, profile)
                 }
 
@@ -221,6 +279,7 @@ fun ProfileScreen(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { selectedDate ->
                             dateOfBirth = dateFormatter.format(Date(selectedDate))
+                            dateOfBirthError = null
                         }
                         showDatePicker = false
                     }
