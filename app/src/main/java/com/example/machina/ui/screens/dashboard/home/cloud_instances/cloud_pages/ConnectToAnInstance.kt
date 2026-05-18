@@ -82,7 +82,7 @@ fun ConnectToACloudInstance(
             is SshConnectionUiState.Success -> {
                 Log.d("connect", "connected: ${currentState.result.output}")
                 snackbarHostState.showSnackbar(
-                    message = "Connected successfully 🎉"
+                    message = "Connected successfully ✅"
                 )
                 navController.navigate(Screen.Terminal.route)
             }
