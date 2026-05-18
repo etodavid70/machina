@@ -40,6 +40,8 @@ class TerminalBridge(
 
     private fun sendToTerminal(data: String) {
         val escaped = JSONObject.quote(data)
+
+
         webView.evaluateJavascript(
             "window.writeToTerminal($escaped);",
             null
