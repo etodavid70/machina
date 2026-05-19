@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +24,7 @@ import com.example.machina.ui.widgets.AppText
 @Composable
 fun SelectRam(){
 
+    var selectedRam by remember { mutableStateOf(4f) }
 
     Column(
 
@@ -39,14 +44,15 @@ fun SelectRam(){
         Spacer(modifier = Modifier.height(16.dp))
         SemiCircularKnob(
             min = 1f,
-            max = 17f // e.g CPU cores
+            max = 17f,
+            initialValue = selectedRam,
+            step = 1f,
+            valueFormatter = { value -> "${value.toInt()} GB" }
         ) { newValue ->
-            println("Selected: $newValue")
-
+            selectedRam = newValue
         }
 
-
-
+        AppText("Selected: ${selectedRam.toInt()} GB")
 
         AppWhiteButton("Save", {})
 

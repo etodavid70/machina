@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -21,6 +25,7 @@ import com.example.machina.ui.widgets.AppText
 @Composable
 fun SelectCPUCores(){
 
+    var selectedCpuCores by remember { mutableStateOf(2f) }
 
     Column(
 
@@ -40,11 +45,16 @@ fun SelectCPUCores(){
         Spacer(modifier = Modifier.height(16.dp))
         SemiCircularKnob(
             min = 1f,
-            max = 5f // e.g CPU cores
+            max = 5f,
+            initialValue = selectedCpuCores,
+            step = 1f,
+            valueFormatter = { value -> "${value.toInt()} cores" }
         ) { newValue ->
-            println("Selected: $newValue")
-
+            selectedCpuCores = newValue
         }
+
+        AppText("Selected: ${selectedCpuCores.toInt()} cores")
+
         AppWhiteButton("Save", {})
 
         Spacer(modifier = Modifier.height(16.dp))
