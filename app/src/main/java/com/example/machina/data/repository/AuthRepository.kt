@@ -6,12 +6,14 @@ import com.example.machina.data.model.onboarding_models.PasswordRequest
 import com.example.machina.data.model.onboarding_models.ProfileRequest
 import com.example.machina.data.model.onboarding_models.VerifyCodeRequest
 import com.example.machina.data.model.onboarding_models.VerifyOtpRequest
+import com.example.machina.data.remote.AuthenticatedAuthApi
 import com.example.machina.data.remote.AuthApi
 import retrofit2.HttpException
 import retrofit2.Response
 
 class AuthRepository (
     private val api: AuthApi,
+    private val authenticatedApi: AuthenticatedAuthApi
 ) {
 
 
@@ -40,7 +42,7 @@ class AuthRepository (
     }
 
     suspend fun resetPassword( passwordData:  PasswordRequest) {
-        api.resetPassword( passwordData).requireSuccessful()
+        authenticatedApi.resetPassword( passwordData).requireSuccessful()
     }
 
 //    suspend fun login(email: String, password: String) {

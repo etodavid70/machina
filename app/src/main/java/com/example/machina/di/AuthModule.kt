@@ -2,9 +2,11 @@ package com.example.machina.di
 
 
 import com.example.machina.data.remote.AuthApi
+import com.example.machina.data.remote.AuthenticatedAuthApi
 import com.example.machina.data.repository.AuthRepository
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
@@ -12,10 +14,15 @@ val authModule = module {
 
 
     single<AuthApi> {
-        get<Retrofit>().create(AuthApi::class.java)
+        get<Retrofit>(named(PUBLIC_RETROFIT)).create(AuthApi::class.java)
     }
+
+    single<AuthenticatedAuthApi> {
+        get<Retrofit>(named(AUTHENTICATED_RETROFIT)).create(AuthenticatedAuthApi::class.java)
+    }
+
     single {
-        AuthRepository(get())
+        AuthRepository(get(), get())
     }
 
     viewModel {

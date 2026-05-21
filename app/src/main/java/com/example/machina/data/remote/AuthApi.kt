@@ -48,12 +48,6 @@ interface AuthApi {
         @Body request: PasswordRequest
     ): Response<Unit>
 
-    @POST("auth/password_reset/")
-
-    suspend fun resetPassword(
-        @Body request: PasswordRequest
-    ): Response<Unit>
-
     @POST("auth/login/")
     suspend fun login(
         @Body request: LoginRequest

@@ -10,13 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.machina.ui.widgets.AppText
 import com.example.machina.view_model.dashboard_viewmodel.DeviceInfoViewModel
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -39,9 +34,23 @@ fun FailedDetails(viewModel: DeviceInfoViewModel) {
                 .verticalScroll(rememberScrollState())
         ) {
 
+            Text("VM REQUIREMENT CHECK")
+            Text("Status: ${if (info.canCreateVirtualMachine) "Passed" else "Failed"}")
+
+            if (info.requirementFailures.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text("FAILED REQUIREMENTS")
+                info.requirementFailures.forEach { failure ->
+                    Text("- $failure")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Text("MEMORY")
             Text("Total RAM: ${info.totalRam}")
             Text("Available RAM: ${info.availableRam}")
+            Text("Minimum RAM met: ${if (info.hasMinimumRam) "Yes" else "No"}")
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -49,11 +58,15 @@ fun FailedDetails(viewModel: DeviceInfoViewModel) {
             Text("Total Storage: ${info.totalStorage}")
             Text("Used Storage: ${info.usedStorage}")
             Text("Free Storage: ${info.freeStorage}")
+            Text("Minimum storage met: ${if (info.hasMinimumStorage) "Yes" else "No"}")
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Text("CPU")
             Text("Cores: ${info.cpuCores}")
+            Text("Max frequency: ${info.cpuMaxFrequencyMhz?.let { "$it MHz" } ?: "Unknown"}")
+            Text("64-bit support: ${if (info.has64BitCpu) "Yes" else "No"}")
+            Text("CPU requirement met: ${if (info.hasStrongEnoughCpu) "Yes" else "No"}")
 
             Spacer(modifier = Modifier.height(12.dp))
 

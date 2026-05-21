@@ -1,8 +1,6 @@
 package com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm
 
 import AppButton
-import android.content.Context
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,21 +46,25 @@ fun CreateVirtualMachine(
 
 
 
-    var showDialog by remember { mutableStateOf(true) }
-    var successful by remember { mutableStateOf(false) }
+    var showCheckingDialog by remember { mutableStateOf(true) }
+    var checkComplete by remember { mutableStateOf(false) }
+    var canCreateVirtualMachine by remember { mutableStateOf(false) }
     var failedDialog by remember { mutableStateOf(false) }
 
 
     LaunchedEffect(Unit) {
-        viewModel.loadDeviceInfo(context)
+        val deviceInfo = viewModel.loadDeviceInfo(context)
+        canCreateVirtualMachine = deviceInfo.canCreateVirtualMachine
+        checkComplete = true
+        showCheckingDialog = false
+        failedDialog = !deviceInfo.canCreateVirtualMachine
     }
 
 
 
     Column() {
-        //ensure this is shown after successful is true
 
-        if (showDialog==false){
+        if (checkComplete && canCreateVirtualMachine){
             AppText(text = "Select an Operating system", fontWeight = FontWeight.Normal, fontSize = 18.sp)
             LazyColumn(
                 modifier = Modifier
@@ -87,37 +89,31 @@ fun CreateVirtualMachine(
 
 
         AppPopupModal(
-            showDialog = showDialog,
+            showDialog = showCheckingDialog,
             onDismiss = {
-
-                //shows the failed dialogue
-                failedDialog = true
+                showCheckingDialog = false
+                navController.popBackStack()
             },
             imageRes = R.drawable.machina,
             title = "Checking your device’s Specification",
             description = "Please wait...",
             buttonText = "Cancel",
             onButtonClick = {
-
-                //removes this dialogue
-                showDialog = false
-                // handle action
+                showCheckingDialog = false
+                navController.popBackStack()
             }
         )
 
         AppPopupModal(
             showDialog = failedDialog,
             onDismiss = {
-
-                //removes the failed dialogue
                 failedDialog = false
             },
             imageRes = R.drawable.setup_failed,
-            title = "Checking your device’s Specification",
+            title = "Device check failed",
             description = "Your Device does not meet the required minimum Specification",
             buttonText = "View Details",
             onButtonClick = {
-//view details page
                 failedDialog = false
                 navController.navigate("failed_details")
             }

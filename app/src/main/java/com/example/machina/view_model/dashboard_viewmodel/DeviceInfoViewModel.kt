@@ -13,7 +13,9 @@ class DeviceInfoViewModel : ViewModel() {
     private val _deviceInfo = MutableLiveData<DeviceInfo>()
     val deviceInfo: LiveData<DeviceInfo> = _deviceInfo
 
-    fun loadDeviceInfo(context: Context) {
-        _deviceInfo.value = DeviceInfoUtil.getDeviceInfo(context)
+    fun loadDeviceInfo(context: Context): DeviceInfo {
+        val deviceInfo = DeviceInfoUtil.getDeviceInfo(context)
+        _deviceInfo.value = deviceInfo
+        return deviceInfo
     }
 }
