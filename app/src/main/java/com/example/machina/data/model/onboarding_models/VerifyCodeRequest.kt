@@ -4,3 +4,8 @@ data class VerifyCodeRequest(
     val email: String,
     val code: String
 )
+
+data class VerifyOtpRequest(
+    val email: String,
+    val otp: String
+)

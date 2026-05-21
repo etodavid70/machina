@@ -10,8 +10,11 @@ import VerificationScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.*
+import com.example.machina.ui.screens.auth.ForgotPasswordRequestOtp
+import com.example.machina.ui.screens.auth.ForgotPasswordVerifyOTP
 import com.example.machina.utils.getUserId
 import com.example.machina.ui.screens.auth.LoginScreen
+import com.example.machina.ui.screens.auth.PasswordReset
 import com.example.machina.ui.screens.dashboard.landing_page.LandingPage
 import com.example.machina.utils.hasCompletedSignup
 
@@ -36,6 +39,11 @@ fun AuthNavGraph() {
         composable("profile") { ProfileScreen(navController) }
 
         composable("password") { PasswordScreen(navController) }
+
+        composable("password-reset") { PasswordReset(navController) }
+        composable("request-otp") { ForgotPasswordRequestOtp(navController) }
+        composable("verify-otp") { ForgotPasswordVerifyOTP(navController) }
+
 
         composable("login") { LoginScreen(navController) }
 

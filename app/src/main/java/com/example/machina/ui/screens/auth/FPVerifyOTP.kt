@@ -1,13 +1,13 @@
+package com.example.machina.ui.screens.auth
+
+import AppButton
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.machina.R
 import com.example.machina.ui.theme.AppGreen
-import com.example.machina.ui.widgets.IndicatorUi
+import com.example.machina.ui.theme.AppOrange
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
 import com.example.machina.ui.widgets.AuthErrorSnackbar
@@ -43,10 +43,9 @@ import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun VerificationScreen(
+fun ForgotPasswordVerifyOTP(
     navController: NavController,
-    currentPage: Int = 1,
-    totalPages: Int = 4,
+
     viewModel: AuthViewModel = koinViewModel()
 ) {
 
@@ -56,7 +55,9 @@ fun VerificationScreen(
     val isLoading = state is AuthUiState.Loading
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var code by remember { mutableStateOf("") }
+    var timeLeft by remember { mutableStateOf(60) }
+
+    var otp by remember { mutableStateOf("") }
     var codeError by remember { mutableStateOf<String?>(null) }
 
     AuthErrorSnackbar(
@@ -66,11 +67,18 @@ fun VerificationScreen(
     )
 
     LaunchedEffect(Unit) {
+        while (timeLeft > 0) {
+            kotlinx.coroutines.delay(1000)
+            timeLeft--
+        }
+    }
+
+    LaunchedEffect(Unit) {
         viewModel.state.collectLatest { state ->
             if (state is AuthUiState.Success && state.step == AuthStep.EmailVerified) {
                 state.userId?.let { saveUserId(context, it) }
                 viewModel.resetState()
-                navController.navigate("profile")
+                navController.navigate("password-reset")
             }
         }
     }
@@ -88,65 +96,67 @@ fun VerificationScreen(
         ) {
 
 
-
-        IndicatorUi(
-            currentPage = currentPage,
-            pageSize = totalPages,
-            modifier = Modifier.align(Alignment.End)
-        )
-
-        Image(
-            painter = painterResource(id =R.drawable.email ),
-            contentDescription = "Background Image",
+            Image(
+                painter = painterResource(id =R.drawable.email ),
+                contentDescription = "Background Image",
 //
-        )
+            )
 
-        AppText("Email Verification",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+            AppText("Validate OTP",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(Modifier.height(16.dp))
-        AppText(
-            "Please enter 6 digit code sent to your email",
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Light,
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
+            AppText(
+                "Please enter 6 digit OTP sent to your email",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Light,
+                textAlign = TextAlign.Center
+            )
 
-        AppTextField(
-            value = code,
-            onValueChange = {
-                code = it.filter(Char::isDigit).take(6)
-                codeError = null
-                viewModel.resetState()
-            },
-            placeholder= "Enter 6 digit code",
-            borderColor = Color.LightGray,
-            focusedBorderColor = AppGreen,
-            errorText = codeError
-        )
-        Spacer(modifier = Modifier.height(50.dp))
+            Spacer(Modifier.height(20.dp))
+            AppText(
+                "OTP Expires in  ${timeLeft} Seconds",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Light,
+                textAlign = TextAlign.Center,
+                color = Color.Red
+            )
+            Spacer(Modifier.height(10.dp))
 
-        AppButton(
-            onClick = {
-                if (code.length != 6) {
-                    codeError = "Enter the 6 digit verification code."
-                    return@AppButton
-                }
-                val email = savedEmail.orEmpty()
-                if (email.isBlank()) {
-                    codeError = "Email session expired. Please request a new code."
-                    return@AppButton
-                }
-                viewModel.verifyCode(email, code)
+            AppTextField(
+                value = otp,
+                onValueChange = {
+                    otp = it.filter(Char::isDigit).take(6)
+                    codeError = null
+                    viewModel.resetState()
+                },
+                placeholder= "Enter 6 digit OTP",
+                borderColor = Color.LightGray,
+                focusedBorderColor = AppGreen,
+                errorText = codeError
+            )
+            Spacer(modifier = Modifier.height(50.dp))
+
+            AppButton(
+                onClick = {
+                    if (otp.length != 6) {
+                        codeError = "Enter the 6 digit OTP sent to your email"
+                        return@AppButton
+                    }
+                    val email = savedEmail.orEmpty()
+                    if (email.isBlank()) {
+                        codeError = "Email session expired. Please request a new code."
+                        return@AppButton
+                    }
+                    viewModel.verifyOtp(email, otp)
 //                navController.navigate("profile")
-                      },
-            text = "Verify Code",
-            isLoading = isLoading
-        )
+                },
+                text = "Verify Code",
+                isLoading = isLoading
+            )
         }
     }
 }

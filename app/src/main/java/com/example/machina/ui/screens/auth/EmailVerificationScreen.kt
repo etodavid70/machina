@@ -3,18 +3,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import android.util.Patterns
 import com.example.machina.R
 import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.IndicatorUi
@@ -37,30 +32,29 @@ import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
 import com.example.machina.ui.widgets.AuthErrorSnackbar
 import com.example.machina.utils.getEmail
-import com.example.machina.utils.saveEmail
+import com.example.machina.utils.saveUserId
 import com.example.machina.view_model.auth_viewmodel.AuthStep
 import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
-import android.util.Log
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
 
 @Composable
-fun EmailScreen(
+fun VerificationScreen(
     navController: NavController,
-    currentPage: Int = 0,
+    currentPage: Int = 1,
     totalPages: Int = 4,
     viewModel: AuthViewModel = koinViewModel()
 ) {
 
     val context = LocalContext.current
+    val savedEmail = remember { getEmail(context) }
     val state by viewModel.state.collectAsState()
     val isLoading = state is AuthUiState.Loading
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var email by remember { mutableStateOf("") }
-    var emailError by remember { mutableStateOf<String?>(null) }
+    var code by remember { mutableStateOf("") }
+    var codeError by remember { mutableStateOf<String?>(null) }
 
     AuthErrorSnackbar(
         state = state,
@@ -68,16 +62,15 @@ fun EmailScreen(
         onMessageShown = viewModel::resetState
     )
 
-
     LaunchedEffect(Unit) {
         viewModel.state.collectLatest { state ->
-            if (state is AuthUiState.Success && state.step == AuthStep.EmailSent) {
+            if (state is AuthUiState.Success && state.step == AuthStep.EmailVerified) {
+                state.userId?.let { saveUserId(context, it) }
                 viewModel.resetState()
-                navController.navigate("verify")
+                navController.navigate("profile")
             }
         }
     }
-
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -102,86 +95,55 @@ fun EmailScreen(
         Image(
             painter = painterResource(id =R.drawable.email ),
             contentDescription = "Background Image",
+//
         )
 
-        AppText("Verification code on your email",
+        AppText("Email Verification",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
 
         Spacer(Modifier.height(16.dp))
-        AppText("We  will send verification code on your email id",
+        AppText(
+            "Please enter 6 digit code sent to your email",
             fontSize = 10.sp,
             fontWeight = FontWeight.Light,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(16.dp))
 
-//        TextField(
-//            value = email,
-//            onValueChange = { email= it },
-//            label = { Text("What email id do you want to use?") },
-//            modifier = Modifier.fillMaxWidth()
-//        )
         AppTextField(
-            value = email,
+            value = code,
             onValueChange = {
-                email = it
-                emailError = null
+                code = it.filter(Char::isDigit).take(6)
+                codeError = null
                 viewModel.resetState()
             },
-            placeholder = "What email id do you want to use?",
+            placeholder= "Enter 6 digit code",
             borderColor = Color.LightGray,
             focusedBorderColor = AppGreen,
-            errorText = emailError
+            errorText = codeError
         )
-
         Spacer(modifier = Modifier.height(50.dp))
 
         AppButton(
             onClick = {
-                val trimmedEmail = email.trim()
-                if (trimmedEmail.isBlank()) {
-                    emailError = "Email is required."
+                if (code.length != 6) {
+                    codeError = "Enter the 6 digit verification code."
                     return@AppButton
                 }
-                if (!Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches()) {
-                    emailError = "Enter a valid email address."
+                val email = savedEmail.orEmpty()
+                if (email.isBlank()) {
+                    codeError = "Email session expired. Please request a new code."
                     return@AppButton
                 }
-
-                viewModel.sendEmail(trimmedEmail)
-                Log.d("email saved", getEmail(context).toString())
-                saveEmail(context, trimmedEmail)
-
-
+                viewModel.verifyCode(email, code)
+//                navController.navigate("profile")
                       },
-            text = "Send Verification Code",
+            text = "Verify Code",
             isLoading = isLoading
         )
-            Spacer(modifier = Modifier.height(10.dp))
-
-
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AppText(
-                    text = "Have an account? ",
-                    fontSize = 14.sp
-                )
-                AppText(
-                    text = "Login",
-                    color = AppGreen,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier
-                        .clickable {
-                            navController.navigate("login")
-                        }
-                )
-            }
         }
     }
 }

@@ -1,13 +1,13 @@
+package com.example.machina.ui.screens.auth
+
+import AppButton
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -32,7 +32,6 @@ import androidx.navigation.NavController
 import android.util.Patterns
 import com.example.machina.R
 import com.example.machina.ui.theme.AppGreen
-import com.example.machina.ui.widgets.IndicatorUi
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
 import com.example.machina.ui.widgets.AuthErrorSnackbar
@@ -43,14 +42,11 @@ import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 import android.util.Log
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
 
 @Composable
-fun EmailScreen(
+fun ForgotPasswordRequestOtp(
     navController: NavController,
-    currentPage: Int = 0,
-    totalPages: Int = 4,
+
     viewModel: AuthViewModel = koinViewModel()
 ) {
 
@@ -73,7 +69,7 @@ fun EmailScreen(
         viewModel.state.collectLatest { state ->
             if (state is AuthUiState.Success && state.step == AuthStep.EmailSent) {
                 viewModel.resetState()
-                navController.navigate("verify")
+                navController.navigate("verify-otp")
             }
         }
     }
@@ -93,30 +89,25 @@ fun EmailScreen(
 
 
 
-        IndicatorUi(
-            currentPage = currentPage,
-            pageSize = totalPages,
-            modifier = Modifier.align(Alignment.End)
-        )
 
-        Image(
-            painter = painterResource(id =R.drawable.email ),
-            contentDescription = "Background Image",
-        )
+            Image(
+                painter = painterResource(id =R.drawable.email ),
+                contentDescription = "Background Image",
+            )
 
-        AppText("Verification code on your email",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+            AppText("Request OTP",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(Modifier.height(16.dp))
-        AppText("We  will send verification code on your email id",
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Light,
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
+            AppText("We will send an OTP to your email id",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Light,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(16.dp))
 
 //        TextField(
 //            value = email,
@@ -124,64 +115,42 @@ fun EmailScreen(
 //            label = { Text("What email id do you want to use?") },
 //            modifier = Modifier.fillMaxWidth()
 //        )
-        AppTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                emailError = null
-                viewModel.resetState()
-            },
-            placeholder = "What email id do you want to use?",
-            borderColor = Color.LightGray,
-            focusedBorderColor = AppGreen,
-            errorText = emailError
-        )
+            AppTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    emailError = null
+                    viewModel.resetState()
+                },
+                placeholder = "What email id do you want to use?",
+                borderColor = Color.LightGray,
+                focusedBorderColor = AppGreen,
+                errorText = emailError
+            )
 
-        Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-        AppButton(
-            onClick = {
-                val trimmedEmail = email.trim()
-                if (trimmedEmail.isBlank()) {
-                    emailError = "Email is required."
-                    return@AppButton
-                }
-                if (!Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches()) {
-                    emailError = "Enter a valid email address."
-                    return@AppButton
-                }
+            AppButton(
+                onClick = {
+                    val trimmedEmail = email.trim()
+                    if (trimmedEmail.isBlank()) {
+                        emailError = "Email is required."
+                        return@AppButton
+                    }
+                    if (!Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches()) {
+                        emailError = "Enter a valid email address."
+                        return@AppButton
+                    }
 
-                viewModel.sendEmail(trimmedEmail)
-                Log.d("email saved", getEmail(context).toString())
-                saveEmail(context, trimmedEmail)
-
-
-                      },
-            text = "Send Verification Code",
-            isLoading = isLoading
-        )
-            Spacer(modifier = Modifier.height(10.dp))
+                    viewModel.sendOtp(trimmedEmail)
+                    Log.d("email saved", getEmail(context).toString())
+                    saveEmail(context, trimmedEmail)
 
 
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AppText(
-                    text = "Have an account? ",
-                    fontSize = 14.sp
-                )
-                AppText(
-                    text = "Login",
-                    color = AppGreen,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier
-                        .clickable {
-                            navController.navigate("login")
-                        }
-                )
-            }
+                },
+                text = "Send OTP",
+                isLoading = isLoading
+            )
         }
     }
 }

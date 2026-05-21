@@ -49,6 +49,7 @@ import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.ui.platform.LocalContext
+import com.example.machina.utils.saveToken
 
 @Composable
 fun LoginScreen(
@@ -78,6 +79,8 @@ fun LoginScreen(
     LaunchedEffect(state) {
         val currentState = state
         if (currentState is AuthUiState.Success && currentState.step == AuthStep.LoggedIn) {
+
+
             saveSignupCompleted(context)
             viewModel.resetState()
             navController.navigate("dashboard") {
@@ -177,7 +180,7 @@ fun LoginScreen(
                         }
 
                         viewModel.login(trimmedEmail, password)
-//                    navController.navigate("dashboard")
+//
 
                     },
                     text = "Login",
@@ -205,7 +208,11 @@ fun LoginScreen(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
-                color = AppGreen
+                color = AppGreen,
+                        modifier = Modifier
+                        .clickable {
+                    navController.navigate("request-otp")
+                }
             )
 
             Spacer(modifier = Modifier.height(12.dp))

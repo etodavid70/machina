@@ -7,7 +7,6 @@ import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 val authModule = module {
 
@@ -20,6 +19,6 @@ val authModule = module {
     }
 
     viewModel {
-        AuthViewModel(get())
+        AuthViewModel(get(), get())
     }
 }
