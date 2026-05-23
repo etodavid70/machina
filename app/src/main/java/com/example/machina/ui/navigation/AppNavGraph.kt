@@ -22,8 +22,13 @@ import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ViewCloudInstance
 import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
 import com.example.machina.ui.screens.dashboard.profile.ProfileScreen
+import com.example.machina.ui.screens.dashboard.settings.ContactScreen
+import com.example.machina.ui.screens.dashboard.settings.PasswordChange
+import com.example.machina.ui.screens.dashboard.settings.PrivacyPolicyScreen
 import com.example.machina.ui.screens.dashboard.settings.SettingsScreen
-import com.example.machina.view_model.dashboard_viewmodel.CloudInstanceViewModel
+import com.example.machina.ui.screens.dashboard.settings.TermsAndConditionsScreen
+import com.example.machina.ui.screens.dashboard.settings.UnavailableFeatureScreen
+import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
 import com.example.machina.view_model.dashboard_viewmodel.CreateVmViewModel
 import com.example.machina.view_model.dashboard_viewmodel.DeviceInfoViewModel
 import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
@@ -34,6 +39,12 @@ import org.koin.androidx.compose.koinViewModel
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Settings : Screen("settings")
+    object PasswordChange: Screen("password_change")
+    object RateApp : Screen("rate_app")
+    object ShareApp : Screen("share_app")
+    object PrivacyPolicy : Screen("privacy_policy")
+    object TermsAndConditions : Screen("terms_and_conditions")
+    object Contact : Screen("contact")
     object Profile : Screen("profile")
 
     object ConnectCloud : Screen("connect_cloud")
@@ -53,7 +64,10 @@ sealed class Screen(val route: String) {
 
 // set up a navigation graph using the screen class and the pages already created
 @Composable
-fun NavigationGraph(navController: NavHostController) {
+fun NavigationGraph(
+    navController: NavHostController,
+    onLogout: () -> Unit = {}
+) {
 
     val viewModel: HomeViewModel = viewModel()
 
@@ -61,7 +75,7 @@ fun NavigationGraph(navController: NavHostController) {
 
     val deviceInfoViewModel: DeviceInfoViewModel= viewModel()
 
-    val cloudInstanceViewModel: CloudInstanceViewModel = koinViewModel()
+    val cloudInstanceViewModel: DashboardViewModel = koinViewModel()
 
     val sshConnectionViewModel: SshConnectionViewModel = koinViewModel()
 
@@ -80,7 +94,43 @@ fun NavigationGraph(navController: NavHostController) {
                 cloudInstanceViewModel = cloudInstanceViewModel
             )
         }
-        composable(Screen.Settings.route) { SettingsScreen() }
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                onBackClick = { navController.popBackStack() },
+                onChangePasswordClick = { navController.navigate(Screen.PasswordChange.route) },
+                onRateAppClick = { navController.navigate(Screen.RateApp.route) },
+                onShareAppClick = { navController.navigate(Screen.ShareApp.route) },
+                onPrivacyPolicyClick = { navController.navigate(Screen.PrivacyPolicy.route) },
+                onTermsAndConditionsClick = { navController.navigate(Screen.TermsAndConditions.route) },
+                onContactClick = { navController.navigate(Screen.Contact.route) },
+                onLogout = onLogout
+            )
+        }
+        composable(Screen.PasswordChange.route) { PasswordChange(navController) }
+        composable(Screen.RateApp.route) {
+            UnavailableFeatureScreen(
+                title = "Rate App",
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.ShareApp.route) {
+            UnavailableFeatureScreen(
+                title = "Share App",
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.PrivacyPolicy.route) {
+            PrivacyPolicyScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable(Screen.TermsAndConditions.route) {
+            TermsAndConditionsScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable(Screen.Contact.route) {
+            ContactScreen(onBackClick = { navController.popBackStack() })
+        }
+
+
+
         composable(Screen.Profile.route) { ProfileScreen() }
 
         //other screens

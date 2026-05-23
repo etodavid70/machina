@@ -5,7 +5,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.ui.Modifier
 import com.example.machina.ui.theme.AppGreen
 
@@ -16,6 +16,7 @@ fun BackButton(
     modifier: Modifier
 ) {
     IconButton(
+        modifier = modifier,
         onClick = {
             when {
                 onClick != null -> onClick()
@@ -24,7 +25,7 @@ fun BackButton(
         }
     ) {
         Icon(
-            imageVector = Icons.Filled.KeyboardArrowLeft,
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = "Back",
             tint = AppGreen
         )

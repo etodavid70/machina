@@ -47,6 +47,15 @@ fun AuthNavGraph() {
 
         composable("login") { LoginScreen(navController) }
 
-        composable("dashboard") { LandingPage() }
+        composable("dashboard") {
+            LandingPage(
+                onLogout = {
+                    navController.navigate("login") {
+                        popUpTo("dashboard") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
     }
 }

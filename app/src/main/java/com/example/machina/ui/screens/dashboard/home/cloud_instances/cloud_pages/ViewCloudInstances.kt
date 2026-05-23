@@ -36,12 +36,12 @@ import coil.compose.AsyncImage
 import com.example.machina.R
 import com.example.machina.ui.widgets.AppPopupModal
 import com.example.machina.data.model.dashboard_models.CloudInstance
-import com.example.machina.view_model.dashboard_viewmodel.CloudInstanceViewModel
+import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
 
 @Composable
 fun ViewCloudInstance(
     navController: NavController,
-    viewModel: CloudInstanceViewModel,
+    viewModel: DashboardViewModel,
 ) {
 
     var showDialog by remember { mutableStateOf(false) }

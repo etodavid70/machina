@@ -14,14 +14,14 @@ import androidx.navigation.NavController
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_cards.ActiveMachineryCard
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_cards.CloudInstancesCard
 import com.example.machina.ui.widgets.AppText
-import com.example.machina.view_model.dashboard_viewmodel.CloudInstanceViewModel
+import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
 import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
 
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    cloudInstanceViewModel: CloudInstanceViewModel,
+    cloudInstanceViewModel: DashboardViewModel,
     navController: NavController
 ) {
     LaunchedEffect(Unit) {

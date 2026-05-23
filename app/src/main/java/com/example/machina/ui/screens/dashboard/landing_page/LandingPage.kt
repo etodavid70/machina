@@ -23,7 +23,9 @@ import com.example.machina.ui.navigation.items
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun LandingPage() {
+fun LandingPage(
+    onLogout: () -> Unit = {}
+) {
     val isDarkTheme = rememberSaveable { mutableStateOf(false) }
     val navController = rememberNavController()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
@@ -46,7 +48,10 @@ fun LandingPage() {
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                NavigationGraph(navController)
+                NavigationGraph(
+                    navController = navController,
+                    onLogout = onLogout
+                )
 
             }
 

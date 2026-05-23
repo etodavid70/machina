@@ -9,7 +9,6 @@ sealed class AuthUiState {
     data class Success(
         val step: AuthStep,
         val userId: String? = null,
-//        val token: String?=null
     ) : AuthUiState()
 
     data class Error(
