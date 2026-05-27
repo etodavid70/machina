@@ -15,6 +15,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.machina.ui.navigation.Screen
 import com.example.machina.ui.navigation.items
 import com.example.machina.ui.theme.AppGreen
+import com.example.machina.ui.widgets.AppText
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -42,7 +43,7 @@ fun BottomNavigationBar(navController: NavController) {
                         contentDescription = screen.route
                     )
                 },
-                label = { Text(text = screen.route.capitalize()) },
+                label = { AppText(text = screen.route.capitalize()) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = AppGreen,
                     selectedTextColor = AppGreen,

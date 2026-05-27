@@ -1,6 +1,9 @@
 package com.example.machina.ui.navigation
 
+import EditProfileScreen
 import TerminalScreen
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -21,7 +24,7 @@ import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages
 
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ViewCloudInstance
 import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
-import com.example.machina.ui.screens.dashboard.profile.ProfileScreen
+import com.example.machina.ui.screens.dashboard.profile.ViewProfileScreen
 import com.example.machina.ui.screens.dashboard.settings.ContactScreen
 import com.example.machina.ui.screens.dashboard.settings.PasswordChange
 import com.example.machina.ui.screens.dashboard.settings.PrivacyPolicyScreen
@@ -45,6 +48,7 @@ sealed class Screen(val route: String) {
     object PrivacyPolicy : Screen("privacy_policy")
     object TermsAndConditions : Screen("terms_and_conditions")
     object Contact : Screen("contact")
+    object EditProfile : Screen("edit_profile")
     object Profile : Screen("profile")
 
     object ConnectCloud : Screen("connect_cloud")
@@ -63,6 +67,7 @@ sealed class Screen(val route: String) {
 }
 
 // set up a navigation graph using the screen class and the pages already created
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
@@ -96,14 +101,14 @@ fun NavigationGraph(
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
-                onBackClick = { navController.popBackStack() },
+                navController = navController,
                 onChangePasswordClick = { navController.navigate(Screen.PasswordChange.route) },
                 onRateAppClick = { navController.navigate(Screen.RateApp.route) },
                 onShareAppClick = { navController.navigate(Screen.ShareApp.route) },
                 onPrivacyPolicyClick = { navController.navigate(Screen.PrivacyPolicy.route) },
                 onTermsAndConditionsClick = { navController.navigate(Screen.TermsAndConditions.route) },
                 onContactClick = { navController.navigate(Screen.Contact.route) },
-                onLogout = onLogout
+
             )
         }
         composable(Screen.PasswordChange.route) { PasswordChange(navController) }
@@ -128,10 +133,15 @@ fun NavigationGraph(
         composable(Screen.Contact.route) {
             ContactScreen(onBackClick = { navController.popBackStack() })
         }
+        composable(Screen.Profile.route) {
+            ViewProfileScreen(navController = navController,
+                onLogout = onLogout)
+        }
+        composable(Screen.EditProfile.route) {
+            EditProfileScreen(navController = navController,)
+        }
 
 
-
-        composable(Screen.Profile.route) { ProfileScreen() }
 
         //other screens
         composable(Screen.ConnectCloud.route) {

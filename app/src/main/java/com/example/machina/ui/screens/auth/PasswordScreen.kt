@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.machina.R
 import com.example.machina.data.model.onboarding_models.PasswordRequest
-import com.example.machina.data.model.onboarding_models.ProfileRequest
 import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.AppPasswordField
 import com.example.machina.ui.widgets.IndicatorUi

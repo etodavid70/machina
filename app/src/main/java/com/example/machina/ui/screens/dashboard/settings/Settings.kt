@@ -23,20 +23,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.machina.ui.theme.AppGreen
+import com.example.machina.ui.widgets.BackButton
 import com.example.machina.utils.clearToken
 
 
 @Composable
 fun SettingsScreen(
-    onBackClick: () -> Unit = {},
+    navController: NavController,
     onChangePasswordClick: () -> Unit = {},
     onRateAppClick: () -> Unit = {},
     onShareAppClick: () -> Unit = {},
     onPrivacyPolicyClick: () -> Unit = {},
     onTermsAndConditionsClick: () -> Unit = {},
     onContactClick: () -> Unit = {},
-    onLogout: () -> Unit = {}
+
 ) {
     val context = LocalContext.current
 
@@ -44,31 +46,31 @@ fun SettingsScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
-            .padding(horizontal = 24.dp, vertical = 40.dp)
+            .padding(horizontal = 20.dp)
+            .padding(top = 12.dp, bottom = 16.dp)
     ) {
 
         // Top Bar
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            BackButton(
+                navController = navController,
+                modifier = Modifier.size(44.dp)
+            )
 
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
+            Spacer(modifier = Modifier.width(8.dp))
 
             Text(
                 text = "Settings",
-                fontSize = 28.sp,
+                fontSize = 26.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.Black
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(18.dp))
 
         // Notification Card
         NotificationItem()
@@ -111,10 +113,6 @@ fun SettingsScreen(
             onClick = onTermsAndConditionsClick
         )
 
-//        SettingsItem(
-//            icon = Icons.Outlined.Description,
-//            title = "Cookies Policy"
-//        )
 
         SettingsItem(
             icon = Icons.Outlined.Email,
@@ -126,33 +124,33 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         // Logout
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    clearToken(context)
-                    onLogout()
-                }
-                .padding(vertical = 14.dp)
-        ) {
-
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.Logout,
-                contentDescription = "Logout",
-                tint = Color.Red,
-                modifier = Modifier.size(26.dp)
-            )
-
-            Spacer(modifier = Modifier.width(18.dp))
-
-            Text(
-                text = "Logout",
-                color = Color.Red,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .clickable {
+//                    clearToken(context)
+//                    onLogout()
+//                }
+//                .padding(vertical = 14.dp)
+//        ) {
+//
+//            Icon(
+//                imageVector = Icons.AutoMirrored.Outlined.Logout,
+//                contentDescription = "Logout",
+//                tint = Color.Red,
+//                modifier = Modifier.size(26.dp)
+//            )
+//
+//            Spacer(modifier = Modifier.width(18.dp))
+//
+//            Text(
+//                text = "Logout",
+//                color = Color.Red,
+//                fontSize = 22.sp,
+//                fontWeight = FontWeight.Medium
+//            )
+//        }
     }
 }
 

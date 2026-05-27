@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.machina.R
 import com.example.machina.ui.theme.AppGreen
-import com.example.machina.ui.theme.AppOrange
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.AppTextField
 import com.example.machina.ui.widgets.AuthErrorSnackbar

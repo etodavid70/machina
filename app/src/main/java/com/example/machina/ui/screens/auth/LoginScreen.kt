@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -49,7 +47,6 @@ import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.ui.platform.LocalContext
-import com.example.machina.utils.saveToken
 
 @Composable
 fun LoginScreen(

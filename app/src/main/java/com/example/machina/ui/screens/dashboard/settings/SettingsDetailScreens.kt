@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.machina.ui.theme.AppGreen
+import com.example.machina.ui.widgets.AppText
 
 @Composable
 fun PrivacyPolicyScreen(
@@ -120,7 +121,7 @@ fun UnavailableFeatureScreen(
                 modifier = Modifier.size(54.dp)
             )
             Spacer(modifier = Modifier.height(18.dp))
-            Text(
+            AppText(
                 text = "Coming soon",
                 color = Color.Black,
                 fontSize = 22.sp,
@@ -159,7 +160,7 @@ private fun SettingsDetailScaffold(
                 )
             }
 
-            Text(
+            AppText(
                 text = title,
                 color = Color.Black,
                 fontSize = 28.sp,
