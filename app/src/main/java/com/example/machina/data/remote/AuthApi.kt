@@ -18,8 +18,6 @@ import retrofit2.http.POST
 
 interface AuthApi {
 
-
-
     @POST("auth/start-email-verification/")
     suspend fun sendEmail(
         @Body request: EmailRequest

@@ -7,13 +7,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.machina.R
 import com.example.machina.data.model.dashboard_models.CloudInstance
+import com.example.machina.data.model.dashboard_models.ServerInstance
 import com.example.machina.ui.screens.dashboard.home.widgets.VmDataCard
 import com.example.machina.ui.theme.AppOrange
 
 
 @Composable
 fun CloudInstancesCard(
-    cloudList: List<CloudInstance>,
+    cloudList: List<ServerInstance>,
     onCreateClick: () -> Unit
 ) {
 
@@ -32,7 +33,7 @@ fun CloudInstancesCard(
                 AppOrange
             )
         } else {
-            val runningCount = cloudList.count { it.status.equals("running", ignoreCase = true) }
+            val runningCount = cloudList.count { it.equals("running") }
 
             VmDataCard(
                 onButtonClick = onCreateClick,

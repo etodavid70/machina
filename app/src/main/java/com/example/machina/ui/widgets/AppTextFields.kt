@@ -96,7 +96,8 @@ fun AppTextFieldRounded(
     placeholder: String,
     focusedBorderColor: Color = AppGreen,
     unfocusedBorderColour: Color= AppGreenLight,
-    errorText: String? = null
+    errorText: String? = null,
+    helperText: String? = null
 ) {
 
 
@@ -111,8 +112,9 @@ fun AppTextFieldRounded(
         singleLine = true,
         isError = errorText != null,
         supportingText = {
-            errorText?.let {
-                Text(text = it, color = Color.Red)
+            when {
+                errorText != null -> Text(text = errorText, color = Color.Red)
+                helperText != null -> Text(text = helperText, color = Color.Gray)
             }
         },
         colors = OutlinedTextFieldDefaults.colors(

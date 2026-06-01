@@ -5,6 +5,8 @@ import TerminalScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -52,6 +54,7 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
 
     object ConnectCloud : Screen("connect_cloud")
+    object ConnectSavedCloud : Screen("connect_saved_cloud")
     object Terminal : Screen("terminal")
     object ViewCloud : Screen("view_cloud_instances")
 
@@ -80,7 +83,7 @@ fun NavigationGraph(
 
     val deviceInfoViewModel: DeviceInfoViewModel= viewModel()
 
-    val cloudInstanceViewModel: DashboardViewModel = koinViewModel()
+    val dashboardViewModel: DashboardViewModel = koinViewModel()
 
     val sshConnectionViewModel: SshConnectionViewModel = koinViewModel()
 
@@ -95,8 +98,6 @@ fun NavigationGraph(
         composable(Screen.Home.route) {
             HomeScreen(
                 navController = navController,
-                viewModel = viewModel,
-                cloudInstanceViewModel = cloudInstanceViewModel
             )
         }
         composable(Screen.Settings.route) {
@@ -145,7 +146,21 @@ fun NavigationGraph(
 
         //other screens
         composable(Screen.ConnectCloud.route) {
-            ConnectToACloudInstance(navController, sshConnectionViewModel)
+            ConnectToACloudInstance(
+                navController = navController,
+                viewModel = sshConnectionViewModel,
+                dashboardViewModel = dashboardViewModel
+            )
+        }
+        composable(Screen.ConnectSavedCloud.route) {
+            val selectedInstance by dashboardViewModel.selectedInstance.collectAsState()
+            ConnectToACloudInstance(
+                navController = navController,
+                viewModel = sshConnectionViewModel,
+                dashboardViewModel = dashboardViewModel,
+                savedServer = selectedInstance,
+                savedServerMode = true
+            )
         }
         composable(Screen.Terminal.route) {
             TerminalScreen(navController, sshConnectionViewModel)
@@ -154,7 +169,7 @@ fun NavigationGraph(
 
             ViewCloudInstance(
                 navController,
-                cloudInstanceViewModel
+                dashboardViewModel
             )
         }
 

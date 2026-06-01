@@ -1,9 +1,14 @@
 package com.example.machina.view_model.dashboard_viewmodel
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.machina.data.repository.DashboardRepository
 import androidx.lifecycle.viewModelScope
-import com.example.machina.data.model.dashboard_models.CloudInstance
+import com.example.machina.data.model.dashboard_models.ActiveMachinery
+import com.example.machina.data.model.dashboard_models.SavedServer
+import com.example.machina.data.model.dashboard_models.ServerInstance
 import com.example.machina.data.model.onboarding_models.PasswordChangeRequest
 import com.example.machina.data.model.onboarding_models.ProfileRequest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +22,11 @@ class DashboardViewModel(
     private val repository: DashboardRepository
 ) : ViewModel() {
 
-    private val _instances = MutableStateFlow<List<CloudInstance>>(emptyList())
-    val instances: StateFlow<List<CloudInstance>> = _instances
+    private val _instances = MutableStateFlow<List<ServerInstance>>(emptyList())
+    val instances: StateFlow<List<ServerInstance>> = _instances
+
+    private val _selectedInstance = MutableStateFlow<ServerInstance?>(null)
+    val selectedInstance: StateFlow<ServerInstance?> = _selectedInstance
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
@@ -38,6 +46,9 @@ class DashboardViewModel(
     private val _state = MutableStateFlow< DashboardUiState>(DashboardUiState.Idle)
     val state: StateFlow<DashboardUiState> = _state
 
+    var vmList by mutableStateOf<List<ActiveMachinery>>(emptyList())
+        private set
+
 
 
     fun changePassword(passwordData: PasswordChangeRequest ) {
@@ -51,6 +62,21 @@ class DashboardViewModel(
                 _state.value = DashboardUiState.Success("Password changed successfully.")
             } catch (e: Exception) {
                 _state.value = DashboardUiState.Error(e.dashboardErrorMessage("Change Password failed"))
+            }
+        }
+    }
+
+    fun saveCloudInstance(saveCloudInstance: SavedServer) {
+
+        viewModelScope.launch {
+
+            _state.value = DashboardUiState.Loading
+
+            try {
+                repository.saveCloudInstance(saveCloudInstance)
+                _state.value = DashboardUiState.Success("Cloud instance saved successfully.")
+            } catch (e: Exception) {
+                _state.value = DashboardUiState.Error(e.dashboardErrorMessage("Saved Cloud failed"))
             }
         }
     }
@@ -122,6 +148,14 @@ class DashboardViewModel(
                 _loading.value = false
             }
         }
+    }
+
+    fun selectInstance(instance: ServerInstance) {
+        _selectedInstance.value = instance
+    }
+
+    fun clearSelectedInstance() {
+        _selectedInstance.value = null
     }
 
     fun clearError() {

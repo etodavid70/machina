@@ -7,18 +7,16 @@ fun ServerInstance.toCloudInstance(): CloudInstance {
         username = username,
         port = port,
         publicIp = publicIp,
-        privateIp = privateIp,
-        cpuCores = cpuCores,
-        ramMb = ramMb,
-        storageGb = storageGb,
-        osVersion = osVersion,
+        privateIp = privateIp.orEmpty(),
+        cpuCores = 0,
+        ramMb = 0,
+        storageGb = 0,
+        osVersion = "",
         serviceProvider = serviceProvider,
-        imageUrl = imageUrl,
-        status = status,
+        imageUrl = "",
+        status = if (lastConnectedAt == null) "saved" else "connected",
         createdAt = createdAt,
-        user = user,
-        mainOs = mainOs,
-        password = password,
-        secretKey = secretKey
+        user = 0,
+        mainOs = 0
     )
 }

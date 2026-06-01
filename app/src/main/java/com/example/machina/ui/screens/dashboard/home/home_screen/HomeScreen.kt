@@ -1,6 +1,7 @@
 package com.example.machina.ui.screens.dashboard.home.home_screen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -9,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_cards.ActiveMachineryCard
@@ -16,31 +18,31 @@ import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_cards
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
 import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
-    cloudInstanceViewModel: DashboardViewModel,
+    viewModel: DashboardViewModel = koinViewModel(),
     navController: NavController
 ) {
     LaunchedEffect(Unit) {
-        viewModel.refresh()
-        cloudInstanceViewModel.fetchInstances()
+        viewModel.fetchProfile()
+        viewModel.fetchInstances()
     }
 
-
+    val profile by viewModel.profile.collectAsState()
     val vmList = viewModel.vmList
-    val cloudList by cloudInstanceViewModel.instances.collectAsState()
+    val cloudList by viewModel.instances.collectAsState()
 
-//    Log.d("vmlist", vmList.toString())
-//    Log.d("cloudlist", cloudList.toString())
+
 
     Column(
         modifier = Modifier
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        AppText("Welcome Eto")
+        AppText("Welcome ${profile.firstName}")
 
         //vm
         AppText(

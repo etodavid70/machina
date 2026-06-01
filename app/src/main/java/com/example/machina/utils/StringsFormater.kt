@@ -31,13 +31,4 @@ fun formatDate(date: String): String {
 }
 
 
-fun toTitleCase(text: String): String {
-    return text
-        .trim()
-        .split(Regex("\\s+"))
-        .filter { it.isNotEmpty() }
-        .joinToString(" ") { word ->
-            word.lowercase()
-                .replaceFirstChar { it.uppercase() }
-        }
-}
+

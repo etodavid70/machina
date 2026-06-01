@@ -17,13 +17,15 @@ import java.util.Properties
 class SshConnectionRepository {
 
     fun connect(request: SshConnectionRequest): SshConnectionResult {
-        val session = createSession(request)
+        var session: Session? = null
 
         try {
-            session.connect(CONNECT_TIMEOUT_MS)
+            val connectedSession = createSession(request)
+            session = connectedSession
+            connectedSession.connect(CONNECT_TIMEOUT_MS)
 
             val output = runCommand(
-                session = session,
+                session = connectedSession,
                 command = "printf 'connected:%s@%s' \"$(whoami)\" \"$(hostname)\"",
                 timeoutMs = COMMAND_TIMEOUT_MS
             ).output
@@ -37,7 +39,7 @@ class SshConnectionRepository {
         } catch (e: JSchException) {
             throw IllegalStateException(buildFailureMessage(request, e), e)
         } finally {
-            if (session.isConnected) {
+            if (session?.isConnected == true) {
                 session.disconnect()
             }
         }
@@ -47,15 +49,17 @@ class SshConnectionRepository {
         val trimmedCommand = command.trim()
         require(trimmedCommand.isNotBlank()) { "Enter a command to run." }
 
-        val session = createSession(request)
+        var session: Session? = null
 
         try {
-            session.connect(CONNECT_TIMEOUT_MS)
-            return runCommand(session, trimmedCommand, COMMAND_TIMEOUT_MS)
+            val connectedSession = createSession(request)
+            session = connectedSession
+            connectedSession.connect(CONNECT_TIMEOUT_MS)
+            return runCommand(connectedSession, trimmedCommand, COMMAND_TIMEOUT_MS)
         } catch (e: JSchException) {
             throw IllegalStateException(buildFailureMessage(request, e), e)
         } finally {
-            if (session.isConnected) {
+            if (session?.isConnected == true) {
                 session.disconnect()
             }
         }
@@ -66,12 +70,14 @@ class SshConnectionRepository {
         columns: Int = DEFAULT_TERMINAL_COLUMNS,
         rows: Int = DEFAULT_TERMINAL_ROWS
     ): SshShellConnection {
-        val session = createSession(request)
+        var session: Session? = null
 
         try {
-            session.connect(CONNECT_TIMEOUT_MS)
+            val connectedSession = createSession(request)
+            session = connectedSession
+            connectedSession.connect(CONNECT_TIMEOUT_MS)
 
-            val channel = session.openChannel("shell") as ChannelShell
+            val channel = connectedSession.openChannel("shell") as ChannelShell
             channel.setPty(true)
             channel.setPtyType("xterm-256color")
             channel.setPtySize(columns, rows, 0, 0)
@@ -85,13 +91,13 @@ class SshConnectionRepository {
             output.flush()
 
             return SshShellConnection(
-                session = session,
+                session = connectedSession,
                 channel = channel,
                 input = input,
                 output = output
             )
         } catch (e: Exception) {
-            if (session.isConnected) {
+            if (session?.isConnected == true) {
                 session.disconnect()
             }
             if (e is JSchException) {
@@ -188,10 +194,17 @@ class SshConnectionRepository {
                 "Could not resolve ${request.host}. Check the host/IP address."
             }
             error.message?.contains("Auth fail", ignoreCase = true) == true -> {
-                "SSH authentication failed. Check the username, password, PEM key, or key passphrase."
+                "SSH authentication failed. For EC2, check that the username matches the AMI (for example ubuntu or ec2-user) and that the PEM key is the key pair attached to this instance."
+            }
+            error.message?.contains("invalid privatekey", ignoreCase = true) == true ||
+                error.message?.contains("invalid private key", ignoreCase = true) == true -> {
+                "The selected PEM key could not be read. Upload the private .pem file for this EC2 key pair, not a .pub or .ppk file."
             }
             error.message?.contains("Connection refused", ignoreCase = true) == true -> {
                 "Connection refused by ${request.host}:${request.port}. Check that SSH is running and listening on port ${request.port}."
+            }
+            error.message?.contains("Algorithm negotiation fail", ignoreCase = true) == true -> {
+                "SSH algorithm negotiation failed. The server and app could not agree on a supported SSH key or host-key algorithm."
             }
             else -> error.message ?: "SSH connection failed"
         }
