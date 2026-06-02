@@ -1,9 +1,11 @@
 package com.example.machina.data.repository
+import android.util.Log
 import com.example.machina.data.model.dashboard_models.SavedServer
 import com.example.machina.data.model.dashboard_models.ServerInstance
 import com.example.machina.data.model.onboarding_models.PasswordChangeRequest
 import com.example.machina.data.model.onboarding_models.ProfileRequest
 import com.example.machina.data.remote.DashboardApi
+import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
 
@@ -14,8 +16,34 @@ class DashboardRepository(private val api: DashboardApi) {
         return api.getCloudInstances()
     }
 
-    suspend fun saveCloudInstance(savedInstance: SavedServer)  {
-        api.saveCloudInstances( savedInstance).requireSuccessful()
+    suspend fun saveCloudInstance(savedInstance: SavedServer) {
+        try {
+            Log.d("save", "saving 5")
+
+            val response = api.saveCloudInstances(savedInstance)
+
+            Log.d("save", "code = ${response.code()}")
+            Log.d("save", "message = ${response.message()}")
+
+            Log.e(
+                "save",
+                "payload = ${savedInstance.toString()}"
+            )
+
+            if (!response.isSuccessful) {
+                Log.e(
+                    "save",
+                    "error body = ${response.errorBody()?.string()}"
+                )
+            }
+
+            response.requireSuccessful()
+
+            Log.d("save", "saving 6")
+
+        } catch (e: Exception) {
+            Log.e("save", "Error saving instance", e)
+        }
     }
 
     suspend fun changePassword(passwordData: PasswordChangeRequest) {
@@ -34,9 +62,28 @@ class DashboardRepository(private val api: DashboardApi) {
 
 private fun <T> Response<T>.requireSuccessful(): T? {
     if (!isSuccessful) {
-        throw HttpException(this)
+//        throw HttpException(this)
+        extractError(errorBody()?.string())
     }
     return body()
 }
 
+
+private fun extractError(errorBody: String?): String {
+    if (errorBody == null) return "Unknown error"
+
+    return try {
+        val json = JSONObject(errorBody)
+
+        json.keys().asSequence()
+            .firstOrNull()
+            ?.let { key ->
+                json.getJSONArray(key).getString(0)
+            }
+            ?: "Unknown error"
+
+    } catch (e: Exception) {
+        errorBody
+    }
+}
 

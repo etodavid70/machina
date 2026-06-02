@@ -73,7 +73,9 @@ class DashboardViewModel(
             _state.value = DashboardUiState.Loading
 
             try {
+                Log.d("save", "saving 3")
                 repository.saveCloudInstance(saveCloudInstance)
+
                 _state.value = DashboardUiState.Success("Cloud instance saved successfully.")
             } catch (e: Exception) {
                 _state.value = DashboardUiState.Error(e.dashboardErrorMessage("Saved Cloud failed"))

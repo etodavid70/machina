@@ -142,12 +142,13 @@ fun ConnectToACloudInstance(
                         navController.navigate(Screen.Terminal.route)
                     } else {
                         val result = currentState.result
-                        connectedRequest = viewModel.getActiveConnectionRequest() ?: SshConnectionRequest(
-                            host = result.host,
-                            username = result.username,
-                            port = result.port,
-                            password = "connected"
-                        )
+                        connectedRequest =
+                            viewModel.getActiveConnectionRequest() ?: SshConnectionRequest(
+                                host = result.host,
+                                username = result.username,
+                                port = result.port,
+                                password = "connected"
+                            )
                         connectedAuthMethod = pendingAuthMethod
                         serverName = defaultServerName(result.username, result.host)
                         serviceProvider = "AWS"
@@ -206,7 +207,10 @@ fun ConnectToACloudInstance(
                 .background(AppGrey)
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(
+                    horizontal = 16.dp,
+//                    vertical = 12.dp
+                ),
             verticalArrangement = Arrangement.Top
         ) {
             ConnectHeader(
@@ -397,29 +401,38 @@ fun ConnectToACloudInstance(
                     dashboardViewModel.resetState()
                     navController.navigate(Screen.Terminal.route)
                 },
-                onSave = {
-                    serverNameError = if (serverName.trim().isBlank()) {
-                        "Server name is required."
-                    } else {
-                        null
-                    }
-                    serviceProviderError = if (serviceProvider.trim().isBlank()) {
-                        "Service provider is required."
-                    } else {
-                        null
-                    }
 
-                    if (serverNameError != null || serviceProviderError != null) {
+
+                onSave = {
+                    // 1. Create local validation variables
+                    val nameToSave = serverName.trim()
+                    val providerToSave = serviceProvider.trim()
+
+                    val nameIsInvalid = nameToSave.isBlank()
+                    val providerIsInvalid = providerToSave.isBlank()
+
+                    // 2. Update UI states for error showing
+                    serverNameError = if (nameIsInvalid) "Server name is required." else null
+                    serviceProviderError =
+                        if (providerIsInvalid) "Service provider is required." else null
+
+                    Log.d("save", "Validated: Name='$nameToSave', Provider='$providerToSave'")
+
+                    // 3. Use the local booleans for the logic check, NOT the state variables
+                    if (nameIsInvalid || providerIsInvalid) {
+                        Log.d("save", "Validation failed, stopping execution.")
                         return@SaveServerPromptDialog
                     }
+
+                    // 4. If we reached here, validation PASSED
 
                     saveRequested = true
                     dashboardViewModel.saveCloudInstance(
                         buildSavedServerPayload(
                             request = request,
                             authMethod = connectedAuthMethod,
-                            name = serverName,
-                            serviceProvider = serviceProvider
+                            name = nameToSave,
+                            serviceProvider = providerToSave
                         )
                     )
                 }
