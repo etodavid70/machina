@@ -1,5 +1,7 @@
 package com.example.machina.data.repository
 import android.util.Log
+import com.example.machina.data.model.createvm_models.MainOs
+import com.example.machina.data.model.createvm_models.OperatingSystems
 import com.example.machina.data.model.dashboard_models.SavedServer
 import com.example.machina.data.model.dashboard_models.ServerInstance
 import com.example.machina.data.model.onboarding_models.PasswordChangeRequest
@@ -12,35 +14,23 @@ import retrofit2.Response
 
 class DashboardRepository(private val api: DashboardApi) {
 
+    suspend fun getMainOs(): List<MainOs> {
+        return api.getMainOs()
+    }
+
+    suspend fun getOperatingSystems(os: String): List<OperatingSystems> {
+        return api.getOperatingSystems(os)
+    }
+
+
     suspend fun getCloudInstances(): List<ServerInstance> {
         return api.getCloudInstances()
     }
 
     suspend fun saveCloudInstance(savedInstance: SavedServer) {
         try {
-            Log.d("save", "saving 5")
-
             val response = api.saveCloudInstances(savedInstance)
-
-            Log.d("save", "code = ${response.code()}")
-            Log.d("save", "message = ${response.message()}")
-
-            Log.e(
-                "save",
-                "payload = ${savedInstance.toString()}"
-            )
-
-            if (!response.isSuccessful) {
-                Log.e(
-                    "save",
-                    "error body = ${response.errorBody()?.string()}"
-                )
-            }
-
             response.requireSuccessful()
-
-            Log.d("save", "saving 6")
-
         } catch (e: Exception) {
             Log.e("save", "Error saving instance", e)
         }

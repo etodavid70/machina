@@ -27,13 +27,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
-import coil.compose.AsyncImage
 import com.example.machina.R
 import com.example.machina.data.model.dashboard_models.ActiveMachinery
 import com.example.machina.ui.widgets.AppPopupModal
+import com.example.machina.ui.widgets.OsAsyncImage
 
 @Composable
 fun ViewActiveMachinery(
@@ -43,9 +41,9 @@ fun ViewActiveMachinery(
 
     var showDialog by remember { mutableStateOf(false) }
 
-    val viewModel: HomeViewModel = viewModel()
+//    val viewModel: HomeViewModel = viewModel()
     LaunchedEffect(Unit) {
-        viewModel.refresh()
+//        viewModel.refresh()
     }
 
     Column(
@@ -122,10 +120,9 @@ fun VirtualMachineItem(
             .padding(24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
-            model = instance.imageUrl,
-            contentDescription = "Network Image",
-            error = painterResource(R.drawable.error)
+        OsAsyncImage(
+            imageUrl = instance.imageUrl,
+            osName = instance.name,
         )
         Spacer(modifier = Modifier.width(5.dp))
 

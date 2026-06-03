@@ -22,6 +22,7 @@ class DashboardViewModel(
     private val repository: DashboardRepository
 ) : ViewModel() {
 
+
     private val _instances = MutableStateFlow<List<ServerInstance>>(emptyList())
     val instances: StateFlow<List<ServerInstance>> = _instances
 

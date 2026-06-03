@@ -36,7 +36,6 @@ import com.example.machina.ui.screens.dashboard.settings.UnavailableFeatureScree
 import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
 import com.example.machina.view_model.dashboard_viewmodel.CreateVmViewModel
 import com.example.machina.view_model.dashboard_viewmodel.DeviceInfoViewModel
-import com.example.machina.view_model.dashboard_viewmodel.HomeViewModel
 import com.example.machina.view_model.dashboard_viewmodel.SshConnectionViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -77,11 +76,15 @@ fun NavigationGraph(
     onLogout: () -> Unit = {}
 ) {
 
-    val viewModel: HomeViewModel = viewModel()
+    val createVmViewModel: CreateVmViewModel = koinViewModel()
 
-    val createVmViewModel: CreateVmViewModel = viewModel()
+    val mainOsList by createVmViewModel.mainOs.collectAsState()
+    val operatingSystems by createVmViewModel.operatingSystems.collectAsState()
+    val mainOsLoading by createVmViewModel.mainOsLoading.collectAsState()
+    val distrosLoading by createVmViewModel.distrosLoading.collectAsState()
+    val createVmError by createVmViewModel.errorMessage.collectAsState()
 
-    val deviceInfoViewModel: DeviceInfoViewModel= viewModel()
+    val deviceInfoViewModel: DeviceInfoViewModel = viewModel()
 
     val dashboardViewModel: DashboardViewModel = koinViewModel()
 
@@ -175,28 +178,32 @@ fun NavigationGraph(
 
         composable(Screen.ViewVM.route) {
             ViewActiveMachinery(
-                navController,
-                viewModel.vmList
+                navController = navController,
+                vmList = dashboardViewModel.vmList,
             )
         }
-
 
         composable(Screen.CreateVM.route) {
             CreateVirtualMachine(
-                navController,
-                createVmViewModel.mainOsVmList,
-                viewModel= deviceInfoViewModel
+                navController = navController,
+                vmList = mainOsList,
+                createVmViewModel = createVmViewModel,
+                loading = mainOsLoading,
+                errorMessage = createVmError,
             )
         }
 
-        composable(Screen.Failed.route) { FailedDetails(
-            viewModel =deviceInfoViewModel
-        ) }
+        composable(Screen.Failed.route) {
+            FailedDetails(viewModel = deviceInfoViewModel)
+        }
 
         composable(Screen.ViewOsType.route) {
             ViewOsTypes(
-                navController,
-                createVmViewModel.vmList
+                navController = navController,
+                vmList = operatingSystems,
+                createVmViewModel = createVmViewModel,
+                loading = distrosLoading,
+                errorMessage = createVmError,
             )
         }
 

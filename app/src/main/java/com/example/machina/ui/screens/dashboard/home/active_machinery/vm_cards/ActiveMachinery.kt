@@ -12,6 +12,8 @@ import com.example.machina.R
 
 @Composable
 fun ActiveMachineryCard(
+//    cardText: String,
+//    buttonText: String,
     vmList: List<ActiveMachinery>,
     onCreateClick: () -> Unit
 ) {

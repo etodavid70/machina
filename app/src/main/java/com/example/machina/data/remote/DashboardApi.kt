@@ -1,4 +1,6 @@
 package com.example.machina.data.remote
+import com.example.machina.data.model.createvm_models.MainOs
+import com.example.machina.data.model.createvm_models.OperatingSystems
 import com.example.machina.data.model.dashboard_models.SavedServer
 import com.example.machina.data.model.dashboard_models.ServerInstance
 import com.example.machina.data.model.onboarding_models.PasswordChangeRequest
@@ -8,8 +10,17 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface DashboardApi {
+
+        @GET("virtual-machines/main-os/")
+        suspend fun getMainOs(): List<MainOs>
+
+        @GET("virtual-machines/main-os/")
+        suspend fun getOperatingSystems(
+                @Query("os") os: String
+        ): List<OperatingSystems>
 
         @GET("virtual-machines/saved-servers/")
         suspend fun getCloudInstances(): List<ServerInstance>

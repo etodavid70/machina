@@ -1,5 +1,6 @@
 package com.example.machina.di
 
+import com.example.machina.data.remote.ApiConfig
 import com.example.machina.utils.TokenManager
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit
 const val PUBLIC_RETROFIT = "publicRetrofit"
 const val AUTHENTICATED_RETROFIT = "authenticatedRetrofit"
 
-private const val BASE_URL = "https://etotronics.pythonanywhere.com/"
+private val BASE_URL = ApiConfig.BASE_URL
 private const val PUBLIC_CLIENT = "publicClient"
 private const val AUTHENTICATED_CLIENT = "authenticatedClient"
 

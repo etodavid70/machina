@@ -2,8 +2,8 @@ package com.example.machina.data.model.createvm_models
 
 import com.google.gson.annotations.SerializedName
 
-data class MainOs(
+data class OperatingSystems(
     val id: Int,
-    @SerializedName("name") val name: String,
+    val name: String,
     @SerializedName("image_url") val imageUrl: String,
 )
