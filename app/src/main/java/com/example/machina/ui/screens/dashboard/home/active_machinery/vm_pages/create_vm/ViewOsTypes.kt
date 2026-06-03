@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.machina.data.model.createvm_models.OperatingSystems
 import com.example.machina.ui.navigation.Screen
+import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.OsAsyncImage
 import com.example.machina.view_model.dashboard_viewmodel.CreateVmViewModel
@@ -51,7 +52,9 @@ fun ViewOsTypes(
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        color = AppGreen
+                    )
                 }
             }
             errorMessage != null -> {

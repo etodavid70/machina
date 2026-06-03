@@ -1,6 +1,7 @@
 package com.example.machina.ui.screens.dashboard.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -21,8 +22,10 @@ import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,12 +38,19 @@ import androidx.compose.ui.unit.sp
 import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.widgets.AppText
 
+private val DetailBackground = Color(0xFFF4F7F5)
+private val DetailText = Color(0xFF15221F)
+private val DetailMuted = Color(0xFF687874)
+private val DetailIconBg = Color(0xFFEAF7F1)
+private val DetailIconTint = Color(0xFF1E7C63)
+
 @Composable
 fun PrivacyPolicyScreen(
     onBackClick: () -> Unit = {}
 ) {
     SettingsDetailScaffold(
         title = "Privacy Policy",
+        subtitle = "How Machina protects your information",
         onBackClick = onBackClick
     ) {
         InfoCard {
@@ -62,6 +72,7 @@ fun TermsAndConditionsScreen(
 ) {
     SettingsDetailScaffold(
         title = "Terms and Conditions",
+        subtitle = "Guidelines for using the app",
         onBackClick = onBackClick
     ) {
         InfoCard {
@@ -83,10 +94,11 @@ fun ContactScreen(
 ) {
     SettingsDetailScaffold(
         title = "Contact",
+        subtitle = "We're here to help",
         onBackClick = onBackClick
     ) {
         InfoCard {
-            SectionTitle("Need Help?")
+            SectionTitle("Need help?")
             BodyText("Reach out to the Machina support team through any of the channels below.")
             Spacer(modifier = Modifier.height(20.dp))
             ContactRow(
@@ -94,7 +106,10 @@ fun ContactScreen(
                 label = "Email",
                 value = "admin@etotronics.com"
             )
-            Spacer(modifier = Modifier.height(14.dp))
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 16.dp),
+                color = Color(0xFFE8EDEA)
+            )
             ContactRow(
                 icon = Icons.Outlined.Phone,
                 label = "Phone",
@@ -111,19 +126,28 @@ fun UnavailableFeatureScreen(
 ) {
     SettingsDetailScaffold(
         title = title,
+        subtitle = "This feature is on the way",
         onBackClick = onBackClick
     ) {
         InfoCard(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                imageVector = Icons.Outlined.Schedule,
-                contentDescription = null,
-                tint = AppGreen,
-                modifier = Modifier.size(54.dp)
-            )
+            Surface(
+                modifier = Modifier.size(72.dp),
+                shape = RoundedCornerShape(20.dp),
+                color = DetailIconBg
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Outlined.Schedule,
+                        contentDescription = null,
+                        tint = AppGreen,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(18.dp))
             AppText(
                 text = "Coming soon",
-                color = Color.Black,
+                color = DetailText,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -139,36 +163,52 @@ fun UnavailableFeatureScreen(
 @Composable
 private fun SettingsDetailScaffold(
     title: String,
+    subtitle: String,
     onBackClick: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-            .padding(horizontal = 24.dp, vertical = 40.dp)
+            .background(DetailBackground)
             .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onBackClick) {
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(Color.White, RoundedCornerShape(12.dp))
+            ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.Black
+                    tint = DetailText
                 )
             }
 
-            AppText(
-                text = title,
-                color = Color.Black,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.SemiBold
-            )
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    color = DetailText,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = subtitle,
+                    color = DetailMuted,
+                    fontSize = 13.sp
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         content()
     }
 }
@@ -181,9 +221,9 @@ private fun InfoCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
             modifier = Modifier
@@ -199,10 +239,11 @@ private fun InfoCard(
 private fun SectionTitle(text: String) {
     Text(
         text = text,
-        color = Color.Black,
-        fontSize = 18.sp,
+        color = DetailText,
+        fontSize = 17.sp,
         fontWeight = FontWeight.SemiBold
     )
+    Spacer(modifier = Modifier.height(6.dp))
 }
 
 @Composable
@@ -213,7 +254,7 @@ private fun BodyText(
     Text(
         text = text,
         modifier = modifier,
-        color = Color(0xFF555555),
+        color = DetailMuted,
         fontSize = 15.sp,
         lineHeight = 22.sp
     )
@@ -229,26 +270,34 @@ private fun ContactRow(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = AppGreen,
-            modifier = Modifier.size(28.dp)
-        )
+        Surface(
+            modifier = Modifier.size(44.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = DetailIconBg
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = DetailIconTint,
+                modifier = Modifier.padding(10.dp)
+            )
+        }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(14.dp))
 
         Column {
             Text(
                 text = label,
-                color = Color(0xFF777777),
-                fontSize = 14.sp
+                color = DetailMuted,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = value,
-                color = Color.Black,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Medium
+                color = DetailText,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
