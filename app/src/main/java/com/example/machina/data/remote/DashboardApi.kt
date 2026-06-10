@@ -8,8 +8,10 @@ import com.example.machina.data.model.onboarding_models.PasswordRequest
 import com.example.machina.data.model.onboarding_models.ProfileRequest
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface DashboardApi {
@@ -24,6 +26,11 @@ interface DashboardApi {
 
         @GET("virtual-machines/saved-servers/")
         suspend fun getCloudInstances(): List<ServerInstance>
+
+        @DELETE ("virtual-machines/saved-servers/{id}/")
+        suspend fun deleteInstance(
+                @Path("id") id: String,
+        ): Response<Unit>
 
         @POST ("virtual-machines/saved-servers/")
         suspend fun saveCloudInstances(

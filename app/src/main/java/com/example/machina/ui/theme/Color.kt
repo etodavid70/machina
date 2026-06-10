@@ -24,3 +24,9 @@ val AppGrey= Color(0xFFF6F6F5)
 val OnlineGreen = Color(0xFF22C55E)
 
 val terminalChrome = Color(0xFF0D1715)
+
+val DeleteColor1 = Color(0xFF8B3A3A)
+
+val DeleteColor2 = Color(0xFFA63D40)
+
+val DeleteColor3 = Color(0xFFB3261E)

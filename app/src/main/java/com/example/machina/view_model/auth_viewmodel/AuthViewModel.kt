@@ -164,8 +164,7 @@ class AuthViewModel (
                 )
 
             } catch (e: Exception) {
-                _state.value = AuthUiState.Error(e.authErrorMessage("Password failed"))
-                Log.d("login failed", e.toString())
+                _state.value = AuthUiState.Error(e.authErrorMessage("Login failed"))
             }
         }
     }

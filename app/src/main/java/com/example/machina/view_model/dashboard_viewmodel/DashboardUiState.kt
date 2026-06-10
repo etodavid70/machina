@@ -9,5 +9,7 @@ sealed class DashboardUiState {
     data class Success(
         val message: String? = null,
     ) : DashboardUiState()
-    data class Error(val message: String) : DashboardUiState()
+    data class Error(
+        val message: String
+    ) : DashboardUiState()
 }

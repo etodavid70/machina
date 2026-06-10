@@ -13,7 +13,6 @@ import androidx.compose.material3.Card
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import com.example.machina.R
 import com.example.machina.ui.widgets.AppText
 
 @Composable

@@ -1,5 +1,6 @@
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.border
@@ -12,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -95,9 +97,10 @@ fun AppWhiteButton(
     modifier: Modifier = Modifier.fillMaxWidth(),
     isEnabled: Boolean = true,
     isLoading: Boolean = false,
-    selectedColor: Color = Color.Transparent ,
+    selectedColor: Color = Color.Transparent,
     unselectedColor: Color = Color.LightGray,
-    textColor: Color = AppGreen
+    textColor: Color = AppGreen,
+    borderColor: Color = AppGreen,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -111,42 +114,37 @@ fun AppWhiteButton(
     )
     val buttonEnabled = isEnabled && !isLoading
 
-    Button(
+    OutlinedButton(
         onClick = onClick,
         enabled = buttonEnabled,
         interactionSource = interactionSource,
         modifier = modifier
             .fillMaxWidth()
             .height(45.dp)
-            .border(1.dp, AppGreen, shape = RoundedCornerShape(8.dp))
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
-            }
-        ,
-        colors = ButtonDefaults.buttonColors(
+            },
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, borderColor),
+        colors = ButtonDefaults.outlinedButtonColors(
             containerColor = if (isEnabled) selectedColor else unselectedColor,
+            contentColor = textColor,
             disabledContainerColor = if (isLoading) selectedColor else unselectedColor,
             disabledContentColor = textColor
-        ),
-//        shape = RoundedCornerShape(4.dp)
+        )
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(18.dp),
-                    strokeWidth = 2.dp,
-                    color = textColor
-                )
-            } else {
-                Text(
-                    text = text,
-                    color = textColor
-                )
-            }
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(18.dp),
+                strokeWidth = 2.dp,
+                color = textColor
+            )
+        } else {
+            Text(
+                text = text,
+                color = textColor
+            )
         }
     }
 }

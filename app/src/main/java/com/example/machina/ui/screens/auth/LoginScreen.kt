@@ -2,6 +2,7 @@ package com.example.machina.ui.screens.auth
 
 import AppButton
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +48,7 @@ import com.example.machina.view_model.auth_viewmodel.AuthUiState
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.ui.platform.LocalContext
+import com.example.machina.view_model.dashboard_viewmodel.DashboardUiState
 
 @Composable
 fun LoginScreen(
@@ -55,7 +57,7 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
 
-    var email by remember { mutableStateOf("") }
+    var rawEmail by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
@@ -79,6 +81,11 @@ fun LoginScreen(
 
 
             saveSignupCompleted(context)
+
+            Toast.makeText(
+                context,
+                "Logged in successfully",
+                Toast.LENGTH_SHORT).show()
             viewModel.resetState()
             navController.navigate("dashboard") {
                 popUpTo("login") { inclusive = true } // optional (removes login from backstack)
@@ -128,9 +135,9 @@ fun LoginScreen(
             Spacer(Modifier.height(16.dp))
 
             AppTextFieldRounded(
-                value = email,
+                value = rawEmail,
                 onValueChange = {
-                    email = it
+                    rawEmail = it
                     emailError = null
                     viewModel.resetState()
                 },
@@ -160,10 +167,10 @@ fun LoginScreen(
 
                 AppButton(
                     onClick = {
-                        val trimmedEmail = email.trim()
+                        val email = rawEmail.trim()
                         emailError = when {
-                            trimmedEmail.isBlank() -> "Email is required."
-                            !Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() -> "Enter a valid email address."
+                            email.isBlank() -> "Email is required."
+                            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Enter a valid email address."
                             else -> null
                         }
                         passwordError = if (password.isBlank()) {
@@ -176,7 +183,7 @@ fun LoginScreen(
                             return@AppButton
                         }
 
-                        viewModel.login(trimmedEmail, password)
+                        viewModel.login(email, password)
 //
 
                     },

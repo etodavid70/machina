@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.example.machina.utils.backendErrorMessage
+import kotlinx.coroutines.flow.asStateFlow
 import retrofit2.HttpException
 
 
@@ -47,8 +48,35 @@ class DashboardViewModel(
     private val _state = MutableStateFlow< DashboardUiState>(DashboardUiState.Idle)
     val state: StateFlow<DashboardUiState> = _state
 
+
+    //for delete instance
+
+    private val _deleteState =
+        MutableStateFlow<DashboardUiState>(DashboardUiState.Idle)
+    val deleteState = _deleteState.asStateFlow()
+
+    //...
     var vmList by mutableStateOf<List<ActiveMachinery>>(emptyList())
         private set
+
+
+
+fun deleteInstance(id: Int) {
+
+
+    viewModelScope.launch {
+
+        _deleteState.value = DashboardUiState.Loading
+
+        try {
+           repository.deleteInstance(id.toString())
+            _deleteState.value = DashboardUiState.Success("Instance deleted successfully")
+        } catch (e: Exception) {
+            _deleteState.value = DashboardUiState.Error(e.dashboardErrorMessage("Delete Instance failed"))
+        }
+    }
+}
+
 
 
 
@@ -167,6 +195,7 @@ class DashboardViewModel(
 
     fun resetState() {
         _state.value = DashboardUiState.Idle
+        _deleteState.value = DashboardUiState.Idle
     }
 
     private fun Exception.dashboardErrorMessage(fallback: String): String {

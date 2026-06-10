@@ -1,12 +1,14 @@
 package com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages
 
 import AppButton
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,8 +22,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Terminal
@@ -40,11 +42,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,12 +61,21 @@ import androidx.navigation.NavController
 import com.example.machina.R
 import com.example.machina.data.model.dashboard_models.ServerInstance
 import com.example.machina.ui.navigation.Screen
+import com.example.machina.ui.screens.dashboard.home.widgets.DeleteConfirmationDialog
 import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.theme.AppGreenLight
 import com.example.machina.ui.theme.AppGrey
 import com.example.machina.ui.theme.AppOrange
+import com.example.machina.ui.theme.ConnectToANewSer
+import com.example.machina.ui.theme.DeleteColor1
+import com.example.machina.ui.theme.DeleteColor2
+import com.example.machina.ui.theme.DeleteColor3
+import com.example.machina.ui.theme.cloudInstanceHeaderSsh
+import com.example.machina.ui.theme.cloudInstanceHeaderText
+import com.example.machina.ui.theme.noCloudInstance
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.ui.widgets.BackButton
+import com.example.machina.view_model.dashboard_viewmodel.DashboardUiState
 import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
 
 @Composable
@@ -69,9 +84,22 @@ fun ViewCloudInstance(
     viewModel: DashboardViewModel,
 ) {
     val cloudList by viewModel.instances.collectAsState()
+
+val context= LocalContext.current
+
+    val deleteState by viewModel.deleteState.collectAsState()
+    val isDeleting = deleteState is DashboardUiState.Loading
+
     val isLoading by viewModel.loading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    var selectedInstance by remember {
+        mutableStateOf<ServerInstance?>(null)
+    }
+
 
     LaunchedEffect(Unit) {
         viewModel.fetchInstances()
@@ -81,6 +109,35 @@ fun ViewCloudInstance(
         errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.clearError()
+        }
+    }
+
+
+    LaunchedEffect(deleteState) {
+        when (deleteState) {
+            is DashboardUiState.Success -> {
+                showDeleteDialog = false
+                 viewModel.resetState()
+
+
+                Toast.makeText(
+                    context,
+                    (deleteState as DashboardUiState.Success).message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            is DashboardUiState.Error -> {
+                showDeleteDialog = false
+
+                Toast.makeText(
+                    context,
+                    (deleteState as DashboardUiState.Error).message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            else -> Unit
         }
     }
 
@@ -104,7 +161,7 @@ fun ViewCloudInstance(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                contentPadding = PaddingValues(
                     start = 16.dp,
                     end = 16.dp,
                     top = 10.dp,
@@ -139,13 +196,18 @@ fun ViewCloudInstance(
                                 onConnectClick = {
                                     viewModel.selectInstance(instance)
                                     navController.navigate(Screen.ConnectSavedCloud.route)
+                                },
+                                onDeleteClick = {
+                                    selectedInstance = instance
+                                    showDeleteDialog = true
+
                                 }
                             )
                         }
 
                         item {
                             AppButton(
-                                text = "Connect a new server",
+                                text = ConnectToANewSer,
                                 onClick = {
                                     viewModel.clearSelectedInstance()
                                     navController.navigate(Screen.ConnectCloud.route)
@@ -157,7 +219,30 @@ fun ViewCloudInstance(
             }
         }
     }
+
+    //delete dialog box
+
+    DeleteConfirmationDialog(
+        showDialog = showDeleteDialog,
+        onDelete = {
+            selectedInstance?.let {
+                viewModel.deleteInstance(it.id)
+            }
+        },
+        onCancel = {
+            showDeleteDialog = false
+        },
+        //this is for delete button
+        isEnabled = !isDeleting,
+        isLoading = isDeleting,
+    )
+
 }
+
+
+//modal
+
+
 
 @Composable
 private fun CloudInstancesHeader(
@@ -221,12 +306,12 @@ private fun CloudInstancesHeader(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Saved SSH endpoints",
+                        text = cloudInstanceHeaderSsh,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.Black
                     )
                     Text(
-                        text = "Choose a server, then authenticate with a password or PEM key.",
+                        text = cloudInstanceHeaderText,
                         fontSize = 12.sp,
                         color = Color.DarkGray,
                         lineHeight = 16.sp
@@ -237,6 +322,8 @@ private fun CloudInstancesHeader(
     }
 }
 
+
+//loader
 @Composable
 private fun LoadingInstances() {
     Box(
@@ -253,6 +340,7 @@ private fun LoadingInstances() {
     }
 }
 
+//empty instance
 @Composable
 private fun EmptyInstances(
     onCreateClick: () -> Unit
@@ -276,7 +364,7 @@ private fun EmptyInstances(
             )
             Spacer(modifier = Modifier.height(12.dp))
             AppText(
-                text = "No saved cloud instances yet.",
+                text = noCloudInstance,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center
             )
@@ -292,7 +380,8 @@ private fun EmptyInstances(
 @Composable
 private fun SavedCloudInstanceCard(
     instance: ServerInstance,
-    onConnectClick: () -> Unit
+    onConnectClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -363,20 +452,42 @@ private fun SavedCloudInstanceCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = onConnectClick,
+            //connect and delete buttons
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Terminal,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Connect", color = Color.White)
+                Button(
+                    onClick = onConnectClick,
+//                modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(6.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Terminal,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Connect", color = Color.White)
+                }
+
+                Button(
+                    onClick = onDeleteClick,
+                    shape = RoundedCornerShape(6.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = DeleteColor2)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Delete", color = Color.White)
+                }
+
             }
         }
     }
@@ -384,7 +495,7 @@ private fun SavedCloudInstanceCard(
 
 @Composable
 private fun InstanceMetadataPill(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     text: String,
     modifier: Modifier = Modifier
 ) {

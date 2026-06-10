@@ -27,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.machina.R
 import com.example.machina.data.model.dashboard_models.ActiveMachinery
 import com.example.machina.ui.widgets.AppPopupModal

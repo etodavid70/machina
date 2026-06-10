@@ -14,6 +14,11 @@ import retrofit2.Response
 
 class DashboardRepository(private val api: DashboardApi) {
 
+    suspend fun deleteInstance(id: String) {
+
+        api.deleteInstance(id).requireSuccessful()
+    }
+
     suspend fun getMainOs(): List<MainOs> {
         return api.getMainOs()
     }
