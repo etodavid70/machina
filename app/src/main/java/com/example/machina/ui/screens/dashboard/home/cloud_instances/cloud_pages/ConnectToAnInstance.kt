@@ -80,6 +80,8 @@ import com.example.machina.view_model.dashboard_viewmodel.DashboardUiState
 import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
 import com.example.machina.view_model.dashboard_viewmodel.SshConnectionUiState
 import com.example.machina.view_model.dashboard_viewmodel.SshConnectionViewModel
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.filled.Link
 
 @Composable
 fun ConnectToACloudInstance(
@@ -292,6 +294,8 @@ fun ConnectToACloudInstance(
             Spacer(modifier = Modifier.height(16.dp))
 
             AppButton(
+
+                icon = Icons.Filled.Link,
                 onClick = {
                     Log.d("connect", "validating ssh connection form")
 

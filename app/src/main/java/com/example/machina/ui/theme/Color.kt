@@ -11,6 +11,8 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val AppGreen= Color(0xFF4DC591)
+val AppDarkGreen= Color(0xFF066f3A)
+
 val AppGreenLight=  Color(0xFF11772D)
 
 val AppPurple = Color(0xFFD9D6F3)
@@ -30,3 +32,9 @@ val DeleteColor1 = Color(0xFF8B3A3A)
 val DeleteColor2 = Color(0xFFA63D40)
 
 val DeleteColor3 = Color(0xFFB3261E)
+
+val GreyColor= Color(0xFF949597)
+val GreyColor2= Color(0xFF656668)
+val GreyColor3= Color(0xFFC0C1C3)
+
+

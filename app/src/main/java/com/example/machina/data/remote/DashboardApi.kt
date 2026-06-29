@@ -1,4 +1,6 @@
 package com.example.machina.data.remote
+import com.example.machina.data.model.DeviceRegistrationRequest
+import com.example.machina.data.model.DeviceRegistrationResponse
 import com.example.machina.data.model.createvm_models.MainOs
 import com.example.machina.data.model.createvm_models.OperatingSystems
 import com.example.machina.data.model.dashboard_models.SavedServer

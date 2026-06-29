@@ -6,13 +6,16 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,23 +25,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.machina.ui.theme.AppGreen
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.filled.Link
 
 
 @Composable
 fun AppButton(
     text: String,
-    onClick: ()-> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier.fillMaxWidth(),
     isEnabled: Boolean = true,
     isLoading: Boolean = false,
+    icon: ImageVector? = null,
     selectedColor: Color = AppGreen,
     unselectedColor: Color = Color.LightGray,
     textColor: Color = Color.White
+
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+
     val scale by animateFloatAsState(
         targetValue = if (isPressed && isEnabled && !isLoading) 0.97f else 1f,
         animationSpec = spring(
@@ -47,6 +57,7 @@ fun AppButton(
         ),
         label = "appButtonPressScale"
     )
+
     val buttonEnabled = isEnabled && !isLoading
 
     Button(
@@ -78,6 +89,17 @@ fun AppButton(
                     color = textColor
                 )
             } else {
+
+                icon?.let {
+                    Icon(
+                        imageVector = it,
+                        contentDescription = null,
+                        tint = textColor
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+
                 Text(
                     text = text,
                     color = textColor

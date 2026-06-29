@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050735844471",
+    "project_id": "machina-70975",
+    "storage_bucket": "machina-70975.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050735844471:android:443428b85c7e2fdddd7a72",
+        "android_client_info": {
+          "package_name": "com.example.machina"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtgOFEyWG31mNWl8xWPUQCFjNlKdDTTyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

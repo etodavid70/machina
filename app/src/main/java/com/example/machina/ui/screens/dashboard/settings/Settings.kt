@@ -1,6 +1,7 @@
 package com.example.machina.ui.screens.dashboard.settings
 
 import RequestNotificationPermission
+import android.provider.CalendarContract.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,10 +27,13 @@ import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Password
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -70,6 +74,7 @@ fun SettingsScreen(
     onPrivacyPolicyClick: () -> Unit = {},
     onTermsAndConditionsClick: () -> Unit = {},
     onContactClick: () -> Unit = {},
+    onNotificationSettingsClick: () -> Unit = {},
 ) {
     RequestNotificationPermission()
 
@@ -85,7 +90,7 @@ fun SettingsScreen(
         }
 
         item {
-            NotificationHeroCard()
+            NotificationHeroCard(onNotificationSettingsClick = onNotificationSettingsClick)
         }
 
         item {
@@ -180,7 +185,7 @@ private fun SettingsHeader() {
 }
 
 @Composable
-private fun NotificationHeroCard() {
+private fun NotificationHeroCard(onNotificationSettingsClick: () -> Unit = {}) {
     var notificationsEnabled by remember { mutableStateOf(true) }
 
     Surface(
@@ -245,17 +250,18 @@ private fun NotificationHeroCard() {
                     )
                 }
 
-                Switch(
-                    checked = notificationsEnabled,
-                    onCheckedChange = { notificationsEnabled = it },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Color(0xFF0F5A47),
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = Color.White.copy(alpha = 0.35f),
-                        uncheckedBorderColor = Color.Transparent
+                IconButton(
+                    onClick = onNotificationSettingsClick,
+                    modifier = Modifier.size(48.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = Color.White
                     )
-                )
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = "Settings"
+                    )
+                }
             }
         }
     }

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.Button
@@ -142,6 +143,7 @@ val context= LocalContext.current
     }
 
     Scaffold(
+//        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         containerColor = AppGrey,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
@@ -207,6 +209,7 @@ val context= LocalContext.current
 
                         item {
                             AppButton(
+                                icon = Icons.Filled.Link,
                                 text = ConnectToANewSer,
                                 onClick = {
                                     viewModel.clearSelectedInstance()

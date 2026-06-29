@@ -28,11 +28,13 @@ import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages
 import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
 import com.example.machina.ui.screens.dashboard.profile.ViewProfileScreen
 import com.example.machina.ui.screens.dashboard.settings.ContactScreen
+import com.example.machina.ui.screens.dashboard.settings.NotificationSettingsScreen
 import com.example.machina.ui.screens.dashboard.settings.PasswordChange
 import com.example.machina.ui.screens.dashboard.settings.PrivacyPolicyScreen
 import com.example.machina.ui.screens.dashboard.settings.SettingsScreen
 import com.example.machina.ui.screens.dashboard.settings.TermsAndConditionsScreen
 import com.example.machina.ui.screens.dashboard.settings.UnavailableFeatureScreen
+import com.example.machina.view_model.NotificationSettingsViewModel
 import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
 import com.example.machina.view_model.dashboard_viewmodel.CreateVmViewModel
 import com.example.machina.view_model.dashboard_viewmodel.DeviceInfoViewModel
@@ -44,6 +46,7 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Settings : Screen("settings")
     object PasswordChange: Screen("password_change")
+    object NotificationSettings : Screen("notification_settings")
     object RateApp : Screen("rate_app")
     object ShareApp : Screen("share_app")
     object PrivacyPolicy : Screen("privacy_policy")
@@ -90,7 +93,7 @@ fun NavigationGraph(
 
     val sshConnectionViewModel: SshConnectionViewModel = koinViewModel()
 
-
+    val notificationSettingsViewModel: NotificationSettingsViewModel = koinViewModel()
 
     NavHost(
         navController = navController,
@@ -112,10 +115,16 @@ fun NavigationGraph(
                 onPrivacyPolicyClick = { navController.navigate(Screen.PrivacyPolicy.route) },
                 onTermsAndConditionsClick = { navController.navigate(Screen.TermsAndConditions.route) },
                 onContactClick = { navController.navigate(Screen.Contact.route) },
-
+                onNotificationSettingsClick = { navController.navigate(Screen.NotificationSettings.route) },
             )
         }
         composable(Screen.PasswordChange.route) { PasswordChange(navController) }
+        composable(Screen.NotificationSettings.route) {
+            NotificationSettingsScreen(
+                viewModel = notificationSettingsViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
         composable(Screen.RateApp.route) {
             UnavailableFeatureScreen(
                 title = "Rate App",
@@ -147,7 +156,7 @@ fun NavigationGraph(
 
 
 
-        //other screens
+//        other screens
         composable(Screen.ConnectCloud.route) {
             ConnectToACloudInstance(
                 navController = navController,
@@ -222,9 +231,3 @@ val items = listOf(
     Screen.Settings,
     Screen.Profile
 )
-
-
-
-
-
-

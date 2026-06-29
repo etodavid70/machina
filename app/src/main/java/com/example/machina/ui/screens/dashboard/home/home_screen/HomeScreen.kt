@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.machina.ui.navigation.Screen
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_cards.ActiveMachineryCard
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_cards.CloudInstancesCard
 import com.example.machina.ui.widgets.AppText
@@ -53,10 +54,10 @@ fun HomeScreen(
             vmList = vmList,
             onCreateClick = {
                 if (vmList.isEmpty()) {
-                    navController.navigate("create_vm")
+                    navController.navigate(Screen.CreateVM.route)
                 }
                 else{
-                    navController.navigate("view_vm")
+                    navController.navigate(Screen.ViewVM.route)
                 }
             }
         )
@@ -71,10 +72,10 @@ fun HomeScreen(
             cloudList = cloudList,
             onCreateClick = {
                 if (cloudList.isEmpty()) {
-                    navController.navigate("connect_cloud")
+                    navController.navigate(Screen.ConnectCloud.route)
                 }
                 else{
-                    navController.navigate("view_cloud_instances")
+                    navController.navigate(Screen.ViewCloud.route)
                 }
             }
         )
