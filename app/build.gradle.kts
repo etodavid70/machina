@@ -79,7 +79,6 @@ dependencies {
     //async image
     implementation(libs.coil.compose)
     implementation(libs.jsch)
-    implementation(libs.terminal.emulator)
     
     // Firebase Cloud Messaging
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))

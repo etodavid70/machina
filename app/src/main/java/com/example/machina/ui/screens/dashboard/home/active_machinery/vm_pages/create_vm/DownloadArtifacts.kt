@@ -1,7 +1,6 @@
 package com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm
 
 import AppButton
-import android.R.attr.title
 import com.example.machina.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -18,12 +22,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.machina.ui.navigation.Screen
 import com.example.machina.ui.widgets.AppProgressBar
 import com.example.machina.ui.widgets.AppText
+import kotlinx.coroutines.delay
 
 
 @Composable
-fun DownloadArtifacts() {
+fun DownloadArtifacts(navController: NavController) {
+    var progress by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(Unit) {
+        for (step in 1..100) {
+            progress = step / 100f
+            delay(35)
+        }
+        navController.navigate(Screen.DisplayOs.route) {
+            popUpTo(Screen.Downloading.route) {
+                inclusive = true
+            }
+            launchSingleTop = true
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -59,7 +80,7 @@ fun DownloadArtifacts() {
         Spacer(modifier = Modifier.height(30.dp))
 
         AppProgressBar(
-            progress = 0.6F
+            progress = progress
         )
 
 
@@ -70,6 +91,12 @@ fun DownloadArtifacts() {
             fontSize = 10.sp,
             textAlign = TextAlign.Center
         )
+//        AppButton("Launch Terminal",
+//            {
+//
+//                navController.navigate("display_os")
+//
+//            })
 
 
     }
