@@ -1,7 +1,6 @@
 package com.example.machina.ui.navigation
 
 import EditProfileScreen
-import TerminalScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -23,6 +22,7 @@ import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.c
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.create_vm.ViewOsTypes
 import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.view_vm.ViewActiveMachinery
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ConnectToACloudInstance
+import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.TerminalScreen
 
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_pages.ViewCloudInstance
 import com.example.machina.ui.screens.dashboard.home.home_screen.HomeScreen
@@ -176,7 +176,10 @@ fun NavigationGraph(
             )
         }
         composable(Screen.Terminal.route) {
-            TerminalScreen(navController, sshConnectionViewModel)
+            TerminalScreen(
+                navController = navController,
+                viewModel = sshConnectionViewModel
+            )
         }
         composable(Screen.ViewCloud.route) {
 

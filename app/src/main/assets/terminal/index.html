@@ -2,20 +2,59 @@
 <html>
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Machina Terminal</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm_customize.min.css" />
 
     <style>
-        html, body {
+        * {
+            box-sizing: border-box;
             margin: 0;
-            height: 100%;
-            background: #0b0f14;
+            padding: 0;
         }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            background: #0b0f14;
+            overflow: hidden;
+        }
+
         #terminal {
-            height: 100vh;
-            width: 100vw;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .xterm {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-feature-settings: "liga" 0;
+            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            cursor: text;
+            height: 100%;
+        }
+
+        .xterm.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999999;
+        }
+
+        .xterm:focus {
+            outline: none;
         }
     </style>
 </head>
@@ -24,29 +63,110 @@
 <div id="terminal"></div>
 
 <script>
+    // High-performance xterm configuration
     const term = new Terminal({
-        fontSize: 14,
+        fontSize: 13,
+        fontFamily: "'Courier New', monospace",
+        fontWeightBold: '700',
+        fontWeightNormal: '400',
+        lineHeight: 1.0,
+        letterSpacing: 0,
         theme: {
             background: "#0b0f14",
-            foreground: "#e5e7eb"
-        }
+            foreground: "#e5e7eb",
+            black: "#000000",
+            red: "#ef2828",
+            green: "#28a745",
+            yellow: "#ffc107",
+            blue: "#007bff",
+            magenta: "#9b59b6",
+            cyan: "#17a2b8",
+            white: "#d3d3d3"
+        },
+        cursorBlink: true,
+        cursorStyle: 'block',
+        cursorInactiveStyle: 'outline',
+        scrollback: 500,      // Reduced from default 1000 to save memory
+        tabStopWidth: 8,
+        fastScrollModifier: 'shift',
+        rendererType: 'canvas',  // Use canvas rendering for better performance
+        fastScrollSensitivity: 5
     });
 
+    // Add to DOM
     term.open(document.getElementById('terminal'));
+    term.focus();
 
-    // SEND INPUT TO ANDROID
-    term.onData(data => {
-        if (window.AndroidTerminal) {
-            window.AndroidTerminal.sendInput(data);
-        }
-    });
+    // Output buffer for batching writes
+    let outputBuffer = '';
+    let outputTimeout = null;
+    const BUFFER_FLUSH_INTERVAL = 50; // ms
 
-    // RECEIVE OUTPUT FROM ANDROID
+    // RECEIVE OUTPUT FROM ANDROID - Buffered writes
     window.writeToTerminal = function(data) {
-        term.write(data);
+        outputBuffer += data;
+        
+        // Clear existing timeout
+        if (outputTimeout) {
+            clearTimeout(outputTimeout);
+        }
+        
+        // Flush buffer after interval or immediately if large
+        if (outputBuffer.length > 16384) {  // 16KB threshold
+            term.write(outputBuffer);
+            outputBuffer = '';
+        } else {
+            outputTimeout = setTimeout(() => {
+                if (outputBuffer.length > 0) {
+                    term.write(outputBuffer);
+                    outputBuffer = '';
+                }
+            }, BUFFER_FLUSH_INTERVAL);
+        }
     };
 
+    // SEND INPUT TO ANDROID - Direct, no buffering
+    term.onData(data => {
+        if (window.AndroidTerminal && data) {
+            try {
+                window.AndroidTerminal.sendInput(data);
+            } catch (e) {
+                console.error('Android bridge error:', e);
+            }
+        }
+    });
 
+    // Handle terminal resize
+    term.onResize(({ cols, rows }) => {
+        // Could notify Android if needed
+        // window.AndroidTerminal.resizeTerminal(cols, rows);
+    });
+
+    // Performance monitoring (optional debug)
+    window.terminalStats = {
+        bytesWritten: 0,
+        writeCount: 0,
+        lastWriteTime: 0,
+        getStats: function() {
+            return {
+                bytesWritten: this.bytesWritten,
+                writeCount: this.writeCount,
+                avgBytesPerWrite: Math.round(this.bytesWritten / Math.max(this.writeCount, 1))
+            };
+        }
+    };
+
+    // Wrap writes to gather stats
+    const originalWrite = term.write.bind(term);
+    term.write = function(data) {
+        window.terminalStats.bytesWritten += data.length;
+        window.terminalStats.writeCount++;
+        window.terminalStats.lastWriteTime = performance.now();
+        return originalWrite(data);
+    };
+
+    // Signal ready
+    console.log('Terminal initialized');
 </script>
 </body>
 </html>

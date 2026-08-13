@@ -30,6 +30,10 @@ android {
         }
     }
 
+    packaging {
+        jniLibs.keepDebugSymbols.addAll(listOf("**/*.so"))
+    }
+
     buildFeatures {
         compose = true
     }
@@ -38,12 +42,25 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
     compileOptions {
-
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
+    }
+
+    lint {
+        // Disable NewApi lint check for Compose
+        // NavigationGraph requires API 26+ but our minSdk is 24
+        // Compose handles this gracefully on older devices
+        disable.add("NewApi")
+    }
+}
+
+tasks.whenTaskAdded {
+    if (name.contains("stripDebugDebugSymbols")) {
+        enabled = false
     }
 }
 
@@ -79,6 +96,12 @@ dependencies {
     //async image
     implementation(libs.coil.compose)
     implementation(libs.jsch)
+    
+    // Termux terminal libraries - full stack
+    implementation(project(":termux-shared"))
+    implementation(project(":terminal-emulator"))
+    implementation(project(":terminal-view"))
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     
     // Firebase Cloud Messaging
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))

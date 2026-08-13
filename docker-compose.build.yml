@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  machina-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JAVA_OPTS: "-Xmx4g"
+    container_name: machina-app-builder
+    volumes:
+      - ./build:/build/build:ro
+      - ./app/build:/build/app/build:ro
+    environment:
+      - GRADLE_OPTS=-Xmx4g -XX:+UseG1GC
+      - GRADLE_USER_HOME=/build/.gradle
+    command: >
+      bash -c "
+      echo 'Building Machina App with Termux Terminal Integration...' &&
+      ./gradlew clean assembleDebug -x test --no-daemon &&
+      echo 'Build complete! APK: app/build/outputs/apk/debug/app-debug.apk'
+      "
+
+volumes:
+  gradle-cache:
+    driver: local

@@ -6,6 +6,7 @@ import coil.ImageLoaderFactory
 import com.example.machina.di.authModule
 import com.example.machina.di.dashboardModule
 import com.example.machina.di.networkModule
+import com.example.machina.terminals.linux.TermuxNativeLibraryLoader
 import com.google.firebase.Firebase
 import com.google.firebase.initialize
 import okhttp3.OkHttpClient
@@ -17,6 +18,9 @@ class MyApplication : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Load Termux native libraries
+        TermuxNativeLibraryLoader.loadNativeLibraries()
 
         // Initialize Firebase
         Firebase.initialize(this)

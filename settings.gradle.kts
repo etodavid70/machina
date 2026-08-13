@@ -12,7 +12,7 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
         google()
         mavenCentral()
@@ -22,3 +22,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "Machina"
 include(":app")
+include(":terminal-emulator")
+include(":terminal-view")
+include(":termux-shared")
+
+project(":terminal-emulator").projectDir = file("termux-kotlin-app/terminal-emulator")
+project(":terminal-view").projectDir = file("termux-kotlin-app/terminal-view")
+project(":termux-shared").projectDir = file("termux-kotlin-app/termux-shared")

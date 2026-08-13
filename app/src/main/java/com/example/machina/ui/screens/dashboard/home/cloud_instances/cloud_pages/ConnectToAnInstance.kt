@@ -215,7 +215,7 @@ fun ConnectToACloudInstance(
                 ),
             verticalArrangement = Arrangement.Top
         ) {
-            ConnectHeader(
+            connectHeader(
                 navController = navController,
                 title = if (isSavedServer) "Authenticate server" else "Connect to cloud"
             )
@@ -446,7 +446,7 @@ fun ConnectToACloudInstance(
 }
 
 @Composable
-private fun ConnectHeader(
+private fun connectHeader(
     navController: NavController,
     title: String
 ) {
@@ -846,7 +846,7 @@ private fun MissingSavedServer(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ConnectHeader(
+            connectHeader(
                 navController = navController,
                 title = "Select a server"
             )

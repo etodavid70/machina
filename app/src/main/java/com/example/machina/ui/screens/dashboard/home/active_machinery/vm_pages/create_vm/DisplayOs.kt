@@ -2,7 +2,7 @@ package com.example.machina.ui.screens.dashboard.home.active_machinery.vm_pages.
 
 import androidx.navigation.NavController
 import androidx.compose.runtime.Composable
-import com.example.machina.terminal.FullTerminalScreen
+//import com.example.machina.ui.screens.EnhancedTerminalScreen
 
 /**
  * Display OS - Full interactive terminal screen
@@ -13,5 +13,5 @@ import com.example.machina.terminal.FullTerminalScreen
 fun DisplayOs(
     navController: NavController
 ) {
-    FullTerminalScreen(navController = navController)
+//    EnhancedTerminalScreen(onBackClick = { navController.popBackStack() })
 }
