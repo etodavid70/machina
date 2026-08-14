@@ -59,12 +59,16 @@ class SshConnectionViewModel(
 
     fun getActiveConnectionRequest(): SshConnectionRequest? = activeConnectionRequest
 
+    //Eto: function that calls the openshell in the repo to open the terminal
     fun openInteractiveShell(
         columns: Int = 80,
         rows: Int = 24
     ): SshShellConnection {
         val request = activeConnectionRequest
             ?: throw IllegalStateException("Connect to a server first.")
+
+        //Eto: calls the openShell function in the repo, passing request, columns and rows
+        //this openShell calls the function that calls the function that calls jsch
         return repository.openShell(request, columns, rows)
     }
 

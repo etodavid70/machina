@@ -38,7 +38,6 @@ class TerminalBridge(
     private val lastFlushTime = AtomicLong(System.currentTimeMillis())
     private val queueDepth = AtomicLong(0)
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun start() {
         // Reader thread: SSH input → queue (priority thread)
         readerThread = Thread {
@@ -140,7 +139,6 @@ class TerminalBridge(
     /**
      * Send batched SSH output to terminal with single optimized JS eval.
      */
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun sendToTerminal(data: String) {
         webView.post {
             try {

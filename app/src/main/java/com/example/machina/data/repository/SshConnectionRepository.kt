@@ -65,7 +65,11 @@ class SshConnectionRepository {
         }
     }
 
+
+    //Eto: function that calls createSession function just below this function
+    // the createSession uses jsch library and returns session
     fun openShell(
+        //request model
         request: SshConnectionRequest,
         columns: Int = DEFAULT_TERMINAL_COLUMNS,
         rows: Int = DEFAULT_TERMINAL_ROWS
@@ -73,6 +77,8 @@ class SshConnectionRepository {
         var session: Session? = null
 
         try {
+            //Eto: createSession is called
+            //it is defined below
             val connectedSession = createSession(request)
             session = connectedSession
             connectedSession.connect(CONNECT_TIMEOUT_MS)
@@ -82,7 +88,10 @@ class SshConnectionRepository {
             channel.setPtyType("xterm-256color")
             channel.setPtySize(columns, rows, 0, 0)
 
+            //Eto: data coming from the server
             val input = channel.inputStream
+
+            //Eto: Data going to the server
             val output = channel.outputStream
 
             channel.connect(CONNECT_TIMEOUT_MS)
@@ -90,6 +99,7 @@ class SshConnectionRepository {
             output.write("\n".toByteArray())
             output.flush()
 
+            //Eto: this class is a created below
             return SshShellConnection(
                 session = connectedSession,
                 channel = channel,
@@ -107,9 +117,13 @@ class SshConnectionRepository {
         }
     }
 
+
+    //Eto: this is the function that creates session using jsch library
+    //called in the openSession function
     private fun createSession(request: SshConnectionRequest): Session {
         val jsch = JSch()
 
+        //Eto: for the pem key or password
         request.privateKey?.let { privateKey ->
             jsch.addIdentity(
                 request.privateKeyName ?: "machina-uploaded-key",
@@ -119,20 +133,27 @@ class SshConnectionRepository {
             )
         }
 
+        //Eto: Starts a jsch session
         val session = jsch.getSession(request.username.trim(), request.host.trim(), request.port)
         request.password?.takeIf { it.isNotBlank() }?.let(session::setPassword)
 
         val config = Properties().apply {
             put("StrictHostKeyChecking", "no")
+
+            //Eto: preferredAuthentications function is called
+            //it is defined below
             put("PreferredAuthentications", preferredAuthentications(request))
         }
 
         session.setConfig(config)
         session.timeout = CONNECT_TIMEOUT_MS
 
+        //returns a jsch.getSession
         return session
     }
 
+    //Eto: function that ---
+   //this is called in the createSession function
     private fun preferredAuthentications(request: SshConnectionRequest): String {
         return if (request.privateKey != null) {
             "publickey,password,keyboard-interactive"
@@ -224,7 +245,7 @@ data class SshCommandResult(
     val exitStatus: Int
 )
 
-
+//Eto: this is what is returned
 class SshShellConnection(
     private val session: Session,
     private val channel: ChannelShell,

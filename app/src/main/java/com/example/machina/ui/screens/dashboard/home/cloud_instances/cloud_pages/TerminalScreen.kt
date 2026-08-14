@@ -70,27 +70,33 @@ fun TerminalScreen(
 
     BackHandler(onBack = ::leaveTerminal)
 
-    // Launch shell connection when state succeeds
+    //Eto: Launches the shell when the ssh connection is established
     LaunchedEffect(state) {
         if (state is SshConnectionUiState.Success) {
             val shell = withContext(Dispatchers.IO) {
+
+                //Eto: calls the function in the viewmodel
                 viewModel.openInteractiveShell()
             }
+            //Eto: If webview is null dont continue this launch effect
             val wv = webView ?: return@LaunchedEffect
             
-            // Stop any existing bridge
+            // Eto: Stop any existing bridge
             bridge?.stop()
-            
+
+            //Eto: creates a js-kotlin bridge using the file TerminalBridge.kt
             bridge = TerminalBridge(shell, wv).apply {
                 start()
             }
         }
     }
 
-    // Cleanup on dispose
+    //Eto: Cleanup on dispose to avoid memory leak
     DisposableEffect(Unit) {
         onDispose {
+            //Eto: stops the bridge
             bridge?.stop()
+            //Eto: destroys the webview
             webView?.destroy()
         }
     }
@@ -153,12 +159,14 @@ fun TerminalScreen(
                 }
             }
 
-            // TERMINAL WEBVIEW - Highly optimized
+            // Eto: Webview that loads index.html
             AndroidView(
                 factory = { ctx ->
                     WebView(ctx).apply {
-                        // Performance settings
+                        // Eto: Performance settings
                         settings.apply {
+
+                            //Eto: enable javascript
                             javaScriptEnabled = true
                             domStorageEnabled = true
                             databaseEnabled = false
@@ -188,7 +196,7 @@ fun TerminalScreen(
                         setBackgroundColor(AndroidColor.BLACK)
                         setLayerType(WebView.LAYER_TYPE_HARDWARE, null)  // Hardware acceleration
                         
-                        // JS → Android bridge (input)
+                        //Eto: JS → Android bridge (input)
                         addJavascriptInterface(
                             object {
                                 @JavascriptInterface
@@ -199,6 +207,8 @@ fun TerminalScreen(
                             "AndroidTerminal"
                         )
 
+                        //the webview loads the index.html
+                        //the index.html
                         loadUrl("file:///android_asset/terminal/index.html")
                         webView = this
                     }
