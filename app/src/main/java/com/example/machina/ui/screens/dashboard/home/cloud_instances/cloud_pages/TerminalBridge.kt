@@ -9,16 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
-/**
- * High-performance terminal bridge with intelligent batching and input prioritization.
- * 
- * Performance optimizations:
- * 1. Input prioritization: user input bypasses batching queue for immediate response
- * 2. Adaptive batching: smaller batches for interactive speed, larger for bulk output
- * 3. Queue-based I/O: decouples SSH reading from WebView posting
- * 4. Efficient JSON escaping: batched quotes reduce string scanning overhead
- * 5. Thread pool: dedicated reader and flusher threads prevent UI blocking
- */
+
 class TerminalBridge(
     private val shell: SshShellConnection,
     private val webView: WebView
@@ -38,8 +29,12 @@ class TerminalBridge(
     private val lastFlushTime = AtomicLong(System.currentTimeMillis())
     private val queueDepth = AtomicLong(0)
 
+
+    //Eto: function to start the terminal
+    //called in the launch  effect of the TerminalScreen
     fun start() {
-        // Reader thread: SSH input → queue (priority thread)
+
+        //Eto: SSH Reader thread: Continuously running
         readerThread = Thread {
             try {
                 val buffer = ByteArray(8192)  // Larger buffer for fewer read() syscalls
@@ -47,7 +42,10 @@ class TerminalBridge(
 
                 while (running.get()) {
                     try {
+
+                        //Eto: Wait until the SSH server sends me something.
                         val read = input.read(buffer)
+
                         if (read > 0) {
                             val data = String(buffer, 0, read, Charsets.UTF_8)
                             outputQueue.offer(data)
@@ -74,7 +72,7 @@ class TerminalBridge(
             start()
         }
 
-        // Flush thread: Batch queue items and send to WebView (debounced)
+        // Eto: Flush thread: Batch queue items and send to WebView (debounced)
         flushThread = Thread {
             try {
                 val batch = StringBuilder(65536)  // Pre-allocate 64KB
@@ -104,6 +102,8 @@ class TerminalBridge(
                             (item == null && batch.isNotEmpty())
 
                     if (shouldFlush && batch.isNotEmpty()) {
+
+                        //Eto: sendToTerminal is called
                         sendToTerminal(batch.toString())
                         batch.clear()
                         itemCount = 0
@@ -123,12 +123,12 @@ class TerminalBridge(
         }
     }
 
-    /**
-     * Send user input immediately (bypasses queue for responsive typing).
-     */
+
+     //Eto: Sends user input from xterm.js to through webview to SSH
+    //called in the AndroidView widget in the TerminalScreen
     fun sendInput(data: String) {
         try {
-            // Write directly to SSH output without queuing
+            // Eto: Write directly to SSH
             shell.output.write(data.toByteArray(Charsets.UTF_8))
             shell.output.flush()
         } catch (e: Exception) {
@@ -136,9 +136,9 @@ class TerminalBridge(
         }
     }
 
-    /**
-     * Send batched SSH output to terminal with single optimized JS eval.
-     */
+
+    //Eto: Send from SSH output to xterm.js terminal(display)
+     //called in the flushThread of the start function
     private fun sendToTerminal(data: String) {
         webView.post {
             try {
@@ -155,10 +155,11 @@ class TerminalBridge(
         }
     }
 
+
+    //Eto: to stop any existing bridge
+    //called in the DisposableEffect|onDispose function in the TerminalScreen
     fun stop() {
         running.set(false)
-        
-        // Wait for threads to finish gracefully
         try {
             readerThread?.join(500)
             flushThread?.join(500)

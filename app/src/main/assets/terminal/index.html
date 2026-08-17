@@ -100,32 +100,70 @@
     // Output buffer for batching writes
     let outputBuffer = '';
     let outputTimeout = null;
-    const BUFFER_FLUSH_INTERVAL = 50; // ms
+    const BUFFER_FLUSH_INTERVAL = 50; // ms - delay for normal output
+    const CONTROL_FLUSH_INTERVAL = 2;  // ms - immediate flush for control sequences
 
-    // RECEIVE OUTPUT FROM ANDROID - Buffered writes
-    window.writeToTerminal = function(data) {
-        outputBuffer += data;
-        
-        // Clear existing timeout
-        if (outputTimeout) {
-            clearTimeout(outputTimeout);
-        }
-        
-        // Flush buffer after interval or immediately if large
-        if (outputBuffer.length > 16384) {  // 16KB threshold
+    /**
+     * Detect if data contains control sequences (backspace, escape codes, etc.)
+     * These must be flushed immediately for proper echo feedback.
+     */
+    function hasControlSequence(data) {
+        // Check for:
+        // - Backspace (\b, \x08)
+        // - Delete (\x7f)
+        // - Escape sequences (\x1b)
+        // - Carriage return (\r)
+        // - Line feed edge cases
+        return /[\x08\x1b\x7f\r]/.test(data) || 
+               data.includes('\b') || 
+               data.startsWith('\x1b[');
+    }
+
+
+    //Eto: Flush output buffer to terminal display
+    //called inside the window.writeToTerminal function
+    function flushOutputBuffer() {
+        if (outputBuffer.length > 0) {
             term.write(outputBuffer);
             outputBuffer = '';
+        }
+        outputTimeout = null;
+    }
+
+
+ //Eto: Receives from ANDROID & SSH terminal and display in the xterm.js terminal
+    window.writeToTerminal = function(data) {
+        if (!data) return;
+
+        const hasControl = hasControlSequence(data);
+
+        if (hasControl) {
+            // Control sequences: flush immediately for responsive feedback
+            if (outputBuffer.length > 0) {
+                flushOutputBuffer();
+            }
+            term.write(data);
+            // Clear any pending timeout
+            if (outputTimeout) {
+                clearTimeout(outputTimeout);
+                outputTimeout = null;
+            }
         } else {
-            outputTimeout = setTimeout(() => {
-                if (outputBuffer.length > 0) {
-                    term.write(outputBuffer);
-                    outputBuffer = '';
-                }
-            }, BUFFER_FLUSH_INTERVAL);
+            // Regular output: buffer for throughput
+            outputBuffer += data;
+
+            // Flush if buffer exceeds size
+            if (outputBuffer.length > 16384) {  // 16KB threshold
+                flushOutputBuffer();
+            } else if (!outputTimeout) {
+                // Schedule flush after delay
+                outputTimeout = setTimeout(flushOutputBuffer, BUFFER_FLUSH_INTERVAL);
+            }
         }
     };
 
-    // SEND INPUT TO ANDROID - Direct, no buffering
+
+    //Eto: sends input commands from xterm.js to ANDROID & SSH
     term.onData(data => {
         if (window.AndroidTerminal && data) {
             try {
@@ -146,11 +184,15 @@
     window.terminalStats = {
         bytesWritten: 0,
         writeCount: 0,
+        controlSequences: 0,
+        regularWrites: 0,
         lastWriteTime: 0,
         getStats: function() {
             return {
                 bytesWritten: this.bytesWritten,
                 writeCount: this.writeCount,
+                controlSequences: this.controlSequences,
+                regularWrites: this.regularWrites,
                 avgBytesPerWrite: Math.round(this.bytesWritten / Math.max(this.writeCount, 1))
             };
         }
@@ -162,6 +204,13 @@
         window.terminalStats.bytesWritten += data.length;
         window.terminalStats.writeCount++;
         window.terminalStats.lastWriteTime = performance.now();
+        
+        if (hasControlSequence(data)) {
+            window.terminalStats.controlSequences++;
+        } else {
+            window.terminalStats.regularWrites++;
+        }
+        
         return originalWrite(data);
     };
 

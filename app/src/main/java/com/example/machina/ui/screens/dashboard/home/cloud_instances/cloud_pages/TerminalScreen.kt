@@ -58,6 +58,8 @@ fun TerminalScreen(
 
     // Memoize WebView and bridge to prevent recreating on recomposition
     var webView by remember { mutableStateOf<WebView?>(null) }
+
+    //initializes the the js/kotlin bridge which is called in the Launch Effect
     var bridge by remember { mutableStateOf<TerminalBridge?>(null) }
 
     fun leaveTerminal() {
@@ -72,10 +74,14 @@ fun TerminalScreen(
 
     //Eto: Launches the shell when the ssh connection is established
     LaunchedEffect(state) {
+
+        //Eto: If the connection is successful
         if (state is SshConnectionUiState.Success) {
+            //open the shell
             val shell = withContext(Dispatchers.IO) {
 
                 //Eto: calls the function in the viewmodel
+                //to establish ssh connectivity
                 viewModel.openInteractiveShell()
             }
             //Eto: If webview is null dont continue this launch effect
@@ -96,6 +102,7 @@ fun TerminalScreen(
         onDispose {
             //Eto: stops the bridge
             bridge?.stop()
+
             //Eto: destroys the webview
             webView?.destroy()
         }

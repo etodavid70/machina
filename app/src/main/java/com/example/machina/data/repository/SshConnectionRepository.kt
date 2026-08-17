@@ -249,8 +249,8 @@ data class SshCommandResult(
 class SshShellConnection(
     private val session: Session,
     private val channel: ChannelShell,
-    val input: InputStream,   // SSH → Android
-    val output: OutputStream   // Android → SSH
+    val input: InputStream,   // SSH → Android|→webview→xterm.js
+    val output: OutputStream   // xterm.js→webview→|Android → SSH
 )
  {
     fun resize(columns: Int, rows: Int) {
