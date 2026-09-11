@@ -245,8 +245,6 @@ val context= LocalContext.current
 
 //modal
 
-
-
 @Composable
 private fun CloudInstancesHeader(
     navController: NavController,
@@ -343,7 +341,7 @@ private fun LoadingInstances() {
     }
 }
 
-//empty instance
+//this card shows the empty instances
 @Composable
 private fun EmptyInstances(
     onCreateClick: () -> Unit
@@ -380,6 +378,7 @@ private fun EmptyInstances(
     }
 }
 
+//this is the card that shows the saved cloud instances
 @Composable
 private fun SavedCloudInstanceCard(
     instance: ServerInstance,

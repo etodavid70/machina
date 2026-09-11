@@ -70,6 +70,9 @@ fun deleteInstance(id: Int) {
 
         try {
            repository.deleteInstance(id.toString())
+            // Both the home card and the instances screen observe this flow. Update it
+            // once the server confirms deletion so Compose recomposes immediately.
+            _instances.value = _instances.value.filterNot { it.id == id }
             _deleteState.value = DashboardUiState.Success("Instance deleted successfully")
         } catch (e: Exception) {
             _deleteState.value = DashboardUiState.Error(e.dashboardErrorMessage("Delete Instance failed"))

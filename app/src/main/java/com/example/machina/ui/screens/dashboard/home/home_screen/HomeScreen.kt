@@ -18,12 +18,11 @@ import com.example.machina.ui.screens.dashboard.home.active_machinery.vm_cards.A
 import com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_cards.CloudInstancesCard
 import com.example.machina.ui.widgets.AppText
 import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
-import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun HomeScreen(
-    viewModel: DashboardViewModel = koinViewModel(),
+    viewModel: DashboardViewModel,
     navController: NavController
 ) {
     LaunchedEffect(Unit) {
@@ -44,6 +43,23 @@ fun HomeScreen(
     ) {
         AppText("Welcome ${profile.firstName}")
 
+        AppText(
+            "Remote Servers",
+            fontWeight = FontWeight.Light,
+            fontSize = 12.sp
+        )
+        CloudInstancesCard(
+            cloudList = cloudList,
+            onCreateClick = {
+                if (cloudList.isEmpty()) {
+                    navController.navigate(Screen.ConnectCloud.route)
+                }
+                else{
+                    navController.navigate(Screen.ViewCloud.route)
+                }
+            }
+        )
+
         //vm
         AppText(
             "Active machinery",
@@ -62,23 +78,7 @@ fun HomeScreen(
             }
         )
 
-        // cloud instance
-        AppText(
-            "Cloud instances",
-            fontWeight = FontWeight.Light,
-            fontSize = 12.sp
-        )
-        CloudInstancesCard(
-            cloudList = cloudList,
-            onCreateClick = {
-                if (cloudList.isEmpty()) {
-                    navController.navigate(Screen.ConnectCloud.route)
-                }
-                else{
-                    navController.navigate(Screen.ViewCloud.route)
-                }
-            }
-        )
+
     }
 
 }

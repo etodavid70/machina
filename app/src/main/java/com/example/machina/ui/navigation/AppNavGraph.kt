@@ -104,6 +104,7 @@ fun NavigationGraph(
         //bottom nav screens
         composable(Screen.Home.route) {
             HomeScreen(
+                viewModel = dashboardViewModel,
                 navController = navController,
             )
         }

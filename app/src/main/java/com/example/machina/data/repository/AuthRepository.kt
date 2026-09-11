@@ -50,8 +50,11 @@ class AuthRepository (
 //    }
 
     suspend fun login( email: String, password: String): String {
-        val response = api.login(LoginRequest(email, password)) .requireSuccessful()
-        return response?.access ?: ""
+        val response = api.login(LoginRequest(email, password)).requireSuccessful()
+        return response?.access
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?: throw IllegalStateException("Invalid email or password")
 
     }
 
