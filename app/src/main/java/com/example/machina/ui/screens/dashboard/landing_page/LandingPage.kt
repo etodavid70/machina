@@ -1,6 +1,7 @@
 package com.example.machina.ui.screens.dashboard.landing_page
 
 import BottomNavigationBar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -36,6 +38,7 @@ fun LandingPage(
         colorScheme = if (isDarkTheme.value) darkColorScheme() else lightColorScheme()
     ) {
         Scaffold(
+            containerColor = Color.White,
             bottomBar = {
                 if (showBottomBar) {
                     BottomNavigationBar(navController)
@@ -46,6 +49,7 @@ fun LandingPage(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color.White)
                     .padding(padding)
             ) {
                 NavigationGraph(

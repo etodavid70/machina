@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -65,7 +66,6 @@ import com.example.machina.ui.navigation.Screen
 import com.example.machina.ui.screens.dashboard.home.widgets.DeleteConfirmationDialog
 import com.example.machina.ui.theme.AppGreen
 import com.example.machina.ui.theme.AppGreenLight
-import com.example.machina.ui.theme.AppGrey
 import com.example.machina.ui.theme.AppOrange
 import com.example.machina.ui.theme.ConnectToANewSer
 import com.example.machina.ui.theme.DeleteColor1
@@ -143,14 +143,16 @@ val context= LocalContext.current
     }
 
     Scaffold(
-//        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        containerColor = AppGrey,
+        // The dashboard scaffold already accounts for the status bar. Avoid adding a
+        // second inset above this header, and keep the whole screen white.
+        contentWindowInsets = WindowInsets(0.dp),
+        containerColor = Color.White,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AppGrey)
+                .background(Color.White)
                 .padding(paddingValues),
             verticalArrangement = Arrangement.Top
         ) {

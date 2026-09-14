@@ -3,7 +3,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +30,7 @@ import com.example.machina.ui.theme.AppGreen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.filled.Link
+import com.example.machina.ui.theme.AppDarkGreen
 
 
 @Composable
@@ -41,7 +41,7 @@ fun AppButton(
     isEnabled: Boolean = true,
     isLoading: Boolean = false,
     icon: ImageVector? = null,
-    selectedColor: Color = AppGreen,
+    selectedColor: Color = AppDarkGreen,
     unselectedColor: Color = Color.LightGray,
     textColor: Color = Color.White
 

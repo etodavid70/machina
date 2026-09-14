@@ -8,6 +8,7 @@ import com.example.machina.ui.screens.dashboard.home.widgets.NoDataCard
 import com.example.machina.ui.screens.dashboard.home.widgets.VmDataCard
 import com.example.machina.ui.theme.AppPurple
 import com.example.machina.R
+import com.example.machina.ui.theme.AppDarkGreen
 
 
 @Composable
@@ -20,7 +21,7 @@ fun ActiveMachineryCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(top = 0.dp)
     )
     {
 //        Log.d("vmList:", vmList.toString())
@@ -30,7 +31,7 @@ fun ActiveMachineryCard(
                 onButtonClick = onCreateClick,
                 cardText = "You currently do not have an active machinery",
                 buttonText = "Create a Vm",
-                backgroundColor = AppPurple
+                backgroundColor = AppPurple.copy(alpha = 0.50f)
             )
         } else {
 

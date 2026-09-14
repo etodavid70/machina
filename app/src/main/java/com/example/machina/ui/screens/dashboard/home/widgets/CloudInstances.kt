@@ -1,14 +1,11 @@
-package com.example.machina.ui.screens.dashboard.home.cloud_instances.cloud_cards
+package com.example.machina.ui.screens.dashboard.home.widgets
 
-import com.example.machina.ui.screens.dashboard.home.widgets.NoDataCard
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.machina.R
-import com.example.machina.data.model.dashboard_models.CloudInstance
 import com.example.machina.data.model.dashboard_models.ServerInstance
-import com.example.machina.ui.screens.dashboard.home.widgets.VmDataCard
 import com.example.machina.ui.theme.AppOrange
 
 
@@ -21,7 +18,7 @@ fun CloudInstancesCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(top = 0.dp)
     )
     {
 //        Log.d("cloudList:", cloudList.toString())
