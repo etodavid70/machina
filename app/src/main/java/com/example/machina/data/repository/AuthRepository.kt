@@ -2,6 +2,7 @@ package com.example.machina.data.repository
 
 import com.example.machina.data.model.onboarding_models.EmailRequest
 import com.example.machina.data.model.onboarding_models.LoginRequest
+import com.example.machina.data.model.onboarding_models.LoginResponse
 import com.example.machina.data.model.onboarding_models.PasswordRequest
 import com.example.machina.data.model.onboarding_models.ProfileRequest
 import com.example.machina.data.model.onboarding_models.VerifyCodeRequest
@@ -45,18 +46,27 @@ class AuthRepository (
         authenticatedApi.resetPassword( passwordData).requireSuccessful()
     }
 
-//    suspend fun login(email: String, password: String) {
-//        api.login(LoginRequest(email, password)).requireSuccessful()
-//    }
 
-    suspend fun login( email: String, password: String): String {
-        val response = api.login(LoginRequest(email, password)).requireSuccessful()
-        return response?.access
-            ?.trim()
-            ?.takeIf { it.isNotEmpty() }
+
+    suspend fun login(
+        email: String,
+        password: String
+    ): LoginResponse {
+
+        val response = api
+            .login(LoginRequest(email, password))
+            .requireSuccessful()
+        return response
             ?: throw IllegalStateException("Invalid email or password")
-
     }
+//    suspend fun login( email: String, password: String): String {
+//        val response = api.login(LoginRequest(email, password)).requireSuccessful()
+//        return response?.access
+//            ?.trim()
+//            ?.takeIf { it.isNotEmpty() }
+//            ?: throw IllegalStateException("Invalid email or password")
+//
+//    }
 
     suspend fun verifyOtp(email: String, otp: String): String? {
         val response = api.verifyOtp(VerifyOtpRequest(email, otp))

@@ -15,7 +15,8 @@ import retrofit2.HttpException
 
 class AuthViewModel (
     private val repository: AuthRepository,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val userSession: UserSession
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
@@ -154,14 +155,18 @@ class AuthViewModel (
             _state.value = AuthUiState.Loading
 
             try {
-                val token =repository.login(email, password)
 
-                tokenManager.saveToken(token)
+                val loginResponse = repository.login(email, password)
+                tokenManager.saveToken(loginResponse.access)
+                userSession.setUser(loginResponse.data)
                 _state.value = AuthUiState.Success(
-                    AuthStep.LoggedIn,
-//                    token = token
-
+                    AuthStep.LoggedIn
                 )
+//                val token =repository.login(email, password)
+//                tokenManager.saveToken(token)
+//                _state.value = AuthUiState.Success(
+//                    AuthStep.LoggedIn,
+//                    )
 
             } catch (e: Exception) {
                 _state.value = AuthUiState.Error(e.authErrorMessage("Login failed"))

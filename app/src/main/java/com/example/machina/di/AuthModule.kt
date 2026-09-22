@@ -6,8 +6,9 @@ import com.example.machina.data.remote.AuthenticatedAuthApi
 import com.example.machina.data.remote.DeviceApi
 import com.example.machina.data.repository.AuthRepository
 import com.example.machina.data.repository.DeviceRepository
-import com.example.machina.view_model.NotificationSettingsViewModel
+import com.example.machina.view_model.notification.NotificationSettingsViewModel
 import com.example.machina.view_model.auth_viewmodel.AuthViewModel
+import com.example.machina.view_model.auth_viewmodel.UserSession
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -37,11 +38,23 @@ val authModule = module {
         DeviceRepository(get())
     }
 
-    viewModel {
-        AuthViewModel(get(), get())
-    }
+    single { UserSession() }
 
     viewModel {
-        NotificationSettingsViewModel(get(), androidContext())
+        AuthViewModel(
+            get(), get(), get()
+        )
+    }
+
+//    viewModel {
+//        NotificationSettingsViewModel(get(), androidContext())
+//    }
+
+    viewModel {
+        NotificationSettingsViewModel(
+            deviceRepository = get(),
+            context = androidContext(),
+            userSession = get()
+        )
     }
 }

@@ -36,8 +36,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.machina.ui.theme.AppGreen
-import com.example.machina.view_model.NotificationSettingsViewModel
+import com.example.machina.view_model.notification.NotificationSettingsViewModel
 
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 private val DetailBackground = Color(0xFFF4F7F5)
 private val DetailText = Color(0xFF15221F)
 private val DetailMuted = Color(0xFF687874)
@@ -47,9 +52,11 @@ private val DetailIconTint = Color(0xFF1E7C63)
 @Composable
 fun NotificationSettingsScreen(
     viewModel: NotificationSettingsViewModel,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onSubscribeNow: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showSubscriptionDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
@@ -212,8 +219,15 @@ fun NotificationSettingsScreen(
         // Register Button
         if (!uiState.isSuccess) {
             Button(
+//                onClick = {
+//                    viewModel.registerFcmDevice()
+//                },
                 onClick = {
-                    viewModel.registerFcmDevice()
+                    if (uiState.isSubscribed) {
+                        viewModel.registerFcmDevice()
+                    } else {
+                        showSubscriptionDialog = true
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -250,4 +264,91 @@ fun NotificationSettingsScreen(
             modifier = Modifier.fillMaxWidth()
         )
     }
+
+    if (showSubscriptionDialog) {
+        SubscriptionRequiredDialog(
+            onSubscribeNow = {
+                showSubscriptionDialog = false
+                onSubscribeNow()
+            },
+            onDismiss = {
+                showSubscriptionDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun SubscriptionRequiredDialog(
+    onSubscribeNow: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Color.White,
+        shape = RoundedCornerShape(24.dp),
+        icon = {
+            Surface(
+                modifier = Modifier.size(64.dp),
+                shape = RoundedCornerShape(20.dp),
+                color = DetailIconBg
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Outlined.Notifications,
+                        contentDescription = null,
+                        tint = AppGreen,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+        },
+        title = {
+            Text(
+                text = "Subscription required",
+                color = DetailText,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = "This option is only available to subscribed users. Subscribe to enable VM and cloud activity notifications.",
+                color = DetailMuted,
+                fontSize = 14.sp,
+                lineHeight = 20.sp
+            )
+        },
+        confirmButton = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onSubscribeNow,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AppGreen
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Subscribe now",
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+
+                TextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Cancel",
+                        color = DetailMuted
+                    )
+                }
+            }
+        },
+        dismissButton = {}
+    )
 }

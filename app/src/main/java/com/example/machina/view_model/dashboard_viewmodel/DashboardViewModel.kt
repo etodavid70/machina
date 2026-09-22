@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.machina.data.repository.DashboardRepository
 import androidx.lifecycle.viewModelScope
+import com.example.machina.data.local.LocalInstanceStore
 import com.example.machina.data.model.dashboard_models.ActiveMachinery
 import com.example.machina.data.model.dashboard_models.SavedServer
 import com.example.machina.data.model.dashboard_models.ServerInstance
@@ -15,12 +16,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.example.machina.utils.backendErrorMessage
+import com.example.machina.view_model.auth_viewmodel.UserSession
 import kotlinx.coroutines.flow.asStateFlow
 import retrofit2.HttpException
 
 
 class DashboardViewModel(
-    private val repository: DashboardRepository
+    private val repository: DashboardRepository,
+    private val userSession: UserSession,
+    private val localInstanceStore: LocalInstanceStore
 ) : ViewModel() {
 
 
@@ -61,27 +65,50 @@ class DashboardViewModel(
 
 
 
-fun deleteInstance(id: Int) {
+//fun deleteInstance(id: Int) {
+//    viewModelScope.launch {
+//
+//        _deleteState.value = DashboardUiState.Loading
+//
+//        try {
+//           repository.deleteInstance(id.toString())
+//            // Both the home card and the instances screen observe this flow. Update it
+//            // once the server confirms deletion so Compose recomposes immediately.
+//            _instances.value = _instances.value.filterNot { it.id == id }
+//            _deleteState.value = DashboardUiState.Success("Instance deleted successfully")
+//        } catch (e: Exception) {
+//            _deleteState.value = DashboardUiState.Error(e.dashboardErrorMessage("Delete Instance failed"))
+//        }
+//    }
+//}
 
 
-    viewModelScope.launch {
+    fun deleteInstance(id: Int) {
+        viewModelScope.launch {
+            _deleteState.value = DashboardUiState.Loading
 
-        _deleteState.value = DashboardUiState.Loading
+            try {
+                if (userSession.isSubscribed) {
+                    repository.deleteInstance(id.toString())
+                } else {
+                    val deleted = localInstanceStore.deleteInstance(
+                        ownerEmail = localOwnerEmail(),
+                        id = id
+                    )
 
-        try {
-           repository.deleteInstance(id.toString())
-            // Both the home card and the instances screen observe this flow. Update it
-            // once the server confirms deletion so Compose recomposes immediately.
-            _instances.value = _instances.value.filterNot { it.id == id }
-            _deleteState.value = DashboardUiState.Success("Instance deleted successfully")
-        } catch (e: Exception) {
-            _deleteState.value = DashboardUiState.Error(e.dashboardErrorMessage("Delete Instance failed"))
+                    check(deleted) { "Saved instance no longer exists." }
+                }
+
+                _instances.value = _instances.value.filterNot { it.id == id }
+
+                _deleteState.value =
+                    DashboardUiState.Success("Instance deleted successfully")
+            } catch (e: Exception) {
+                _deleteState.value =
+                    DashboardUiState.Error(e.dashboardErrorMessage("Delete Instance failed"))
+            }
         }
     }
-}
-
-
-
 
     fun changePassword(passwordData: PasswordChangeRequest ) {
 
@@ -99,21 +126,46 @@ fun deleteInstance(id: Int) {
     }
 
     fun saveCloudInstance(saveCloudInstance: SavedServer) {
-
         viewModelScope.launch {
-
             _state.value = DashboardUiState.Loading
 
             try {
-                Log.d("save", "saving 3")
-                repository.saveCloudInstance(saveCloudInstance)
+                if (userSession.isSubscribed) {
+                    repository.saveCloudInstance(saveCloudInstance)
+                } else {
+                    localInstanceStore.saveInstance(
+                        ownerEmail = localOwnerEmail(),
+                        savedServer = saveCloudInstance
+                    )
 
-                _state.value = DashboardUiState.Success("Cloud instance saved successfully.")
+                    _instances.value =
+                        localInstanceStore.getInstances(localOwnerEmail())
+                }
+
+                _state.value =
+                    DashboardUiState.Success("Cloud instance saved successfully.")
             } catch (e: Exception) {
-                _state.value = DashboardUiState.Error(e.dashboardErrorMessage("Saved Cloud failed"))
+                _state.value =
+                    DashboardUiState.Error(e.dashboardErrorMessage("Saved Cloud failed"))
             }
         }
     }
+//    fun saveCloudInstance(saveCloudInstance: SavedServer) {
+//
+//        viewModelScope.launch {
+//
+//            _state.value = DashboardUiState.Loading
+//
+//            try {
+//                Log.d("save", "saving 3")
+//                repository.saveCloudInstance(saveCloudInstance)
+//
+//                _state.value = DashboardUiState.Success("Cloud instance saved successfully.")
+//            } catch (e: Exception) {
+//                _state.value = DashboardUiState.Error(e.dashboardErrorMessage("Saved Cloud failed"))
+//            }
+//        }
+//    }
 
 
     fun editProfile(profile: ProfileRequest) {
@@ -167,22 +219,43 @@ fun deleteInstance(id: Int) {
         }
     }
 
-
-
     fun fetchInstances() {
         viewModelScope.launch {
             _loading.value = true
             _errorMessage.value = null
+
             try {
-                _instances.value = repository.getCloudInstances()
+                _instances.value =
+                    if (userSession.isSubscribed) {
+                        repository.getCloudInstances()
+                    } else {
+                        localInstanceStore.getInstances(localOwnerEmail())
+                    }
             } catch (e: Exception) {
-                _errorMessage.value = e.backendErrorMessage("Failed to load cloud instances")
-                e.printStackTrace()
+                _errorMessage.value =
+                    e.backendErrorMessage("Failed to load cloud instances")
             } finally {
                 _loading.value = false
             }
         }
     }
+
+//    private fun CoroutineScope.localOwnerEmail(): String {}
+
+//    fun fetchInstances() {
+//        viewModelScope.launch {
+//            _loading.value = true
+//            _errorMessage.value = null
+//            try {
+//                _instances.value = repository.getCloudInstances()
+//            } catch (e: Exception) {
+//                _errorMessage.value = e.backendErrorMessage("Failed to load cloud instances")
+//                e.printStackTrace()
+//            } finally {
+//                _loading.value = false
+//            }
+//        }
+//    }
 
     fun selectInstance(instance: ServerInstance) {
         _selectedInstance.value = instance
@@ -199,6 +272,13 @@ fun deleteInstance(id: Int) {
     fun resetState() {
         _state.value = DashboardUiState.Idle
         _deleteState.value = DashboardUiState.Idle
+    }
+
+    private fun localOwnerEmail(): String {
+        return userSession.user.value?.email
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?: throw IllegalStateException("User session is unavailable.")
     }
 
     private fun Exception.dashboardErrorMessage(fallback: String): String {

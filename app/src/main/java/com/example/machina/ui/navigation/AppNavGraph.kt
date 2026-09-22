@@ -34,7 +34,7 @@ import com.example.machina.ui.screens.dashboard.settings.PrivacyPolicyScreen
 import com.example.machina.ui.screens.dashboard.settings.SettingsScreen
 import com.example.machina.ui.screens.dashboard.settings.TermsAndConditionsScreen
 import com.example.machina.ui.screens.dashboard.settings.UnavailableFeatureScreen
-import com.example.machina.view_model.NotificationSettingsViewModel
+import com.example.machina.view_model.notification.NotificationSettingsViewModel
 import com.example.machina.view_model.dashboard_viewmodel.DashboardViewModel
 import com.example.machina.view_model.dashboard_viewmodel.CreateVmViewModel
 import com.example.machina.view_model.dashboard_viewmodel.DeviceInfoViewModel
@@ -47,6 +47,7 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
     object PasswordChange: Screen("password_change")
     object NotificationSettings : Screen("notification_settings")
+    object Subscribe : Screen("subscribe")
     object RateApp : Screen("rate_app")
     object ShareApp : Screen("share_app")
     object PrivacyPolicy : Screen("privacy_policy")
@@ -121,9 +122,26 @@ fun NavigationGraph(
             )
         }
         composable(Screen.PasswordChange.route) { PasswordChange(navController) }
+//        composable(Screen.NotificationSettings.route) {
+//            NotificationSettingsScreen(
+//                viewModel = notificationSettingsViewModel,
+//                onBackClick = { navController.popBackStack() }
+//            )
+//        }
+
         composable(Screen.NotificationSettings.route) {
             NotificationSettingsScreen(
                 viewModel = notificationSettingsViewModel,
+                onBackClick = { navController.popBackStack() },
+                onSubscribeNow = {
+                    navController.navigate(Screen.Subscribe.route)
+                }
+            )
+        }
+
+        composable(Screen.Subscribe.route) {
+            UnavailableFeatureScreen(
+                title = "Subscribe",
                 onBackClick = { navController.popBackStack() }
             )
         }

@@ -1,4 +1,4 @@
-package com.example.machina.view_model
+package com.example.machina.view_model.notification
 
 import android.content.Context
 import android.os.Build
@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.machina.data.repository.DeviceRepository
+import com.example.machina.view_model.auth_viewmodel.UserSession
 import com.google.firebase.Firebase
 import com.google.firebase.messaging.messaging
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,18 +20,33 @@ data class NotificationSettingsUiState(
     val isSuccess: Boolean = false,
     val errorMessage: String? = null,
     val fcmToken: String? = null,
-    val deviceName: String? = null
+    val deviceName: String? = null,
+    val isSubscribed: Boolean = false
 )
 
 class NotificationSettingsViewModel(
     private val deviceRepository: DeviceRepository,
-    private val context: Context
+    private val context: Context,
+    private val userSession: UserSession
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NotificationSettingsUiState())
     val uiState: StateFlow<NotificationSettingsUiState> = _uiState.asStateFlow()
 
+//    init {
+//        loadFcmToken()
+//    }
+
+
     init {
+        viewModelScope.launch {
+            userSession.user.collect { user ->
+                _uiState.value = _uiState.value.copy(
+                    isSubscribed = user?.isSubscribed == true
+                )
+            }
+        }
+
         loadFcmToken()
     }
 
@@ -50,6 +66,13 @@ class NotificationSettingsViewModel(
     }
 
     fun registerFcmDevice(deviceName: String? = null) {
+        if (!userSession.isSubscribed) {
+            _uiState.value = _uiState.value.copy(
+                errorMessage = "This option is only available to subscribed users."
+            )
+            return
+        }
+
         val fcmToken = _uiState.value.fcmToken
         
         if (fcmToken == null) {
